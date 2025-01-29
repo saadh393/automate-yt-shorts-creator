@@ -37,7 +37,7 @@ async function writeDataJson(files) {
   const dataPath = path.join(__dirname, '../data.json');
   const data = {
     images: files.images?.map(file => file.filename) || [],
-    audio: files.audio?.[0] ? files.audio[0].filename : null,
+    audio: files.audio?.map(file => file.filename) || [],
     duration: 10 // Default duration in seconds
   };
 
@@ -81,45 +81,29 @@ async function renderVideo(dataPath) {
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
-  destination: async function (req, file, cb) {
-    const uploadDir = path.join(__dirname, '../public/uploads');
-    try {
-      // Only clean directory for the first file
-      if (!req.uploadDirCleaned) {
-        await cleanDirectory(uploadDir);
-        req.uploadDirCleaned = true;
-      }
-      cb(null, uploadDir);
-    } catch (error) {
-      cb(error, null);
-    }
+  destination(req, file, cb) {
+    const dir = path.join(__dirname, '..', file.fieldname === 'audio' ? 'public/audio' : 'public/images');
+    fs.mkdir(dir, { recursive: true })
+      .then(() => cb(null, dir))
+      .catch(err => cb(err));
   },
-  filename: function (req, file, cb) {
-    if (file.fieldname === 'audio') {
-      // Keep original extension for audio file
-      const ext = path.extname(file.originalname);
-      cb(null, `audio${ext}`);
-    } else {
-      // For images, use index number in the name
-      const imageIndex = req.imageCount = (req.imageCount || 0) + 1;
-      const ext = path.extname(file.originalname) || '.png';
-      cb(null, `image-${imageIndex}${ext}`);
-    }
+  filename(req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
   }
 });
 
 const upload = multer({
   storage: storage,
   limits: {
-    fileSize: 50 * 1024 * 1024, // 50MB limit
-    files: 13 // 12 images + 1 audio file
+    fileSize: 50 * 1024 * 1024 // 50MB limit
   }
 });
 
 // Handle multiple image uploads and single audio upload
 app.post('/api/upload', upload.fields([
-  { name: 'images', maxCount: 12 },
-  { name: 'audio', maxCount: 1 }
+  { name: 'images', maxCount: 10 },
+  { name: 'audio', maxCount: 10 }
 ]), async (req, res) => {
   try {
     const files = req.files;
@@ -136,8 +120,8 @@ app.post('/api/upload', upload.fields([
     const videoPath = await renderVideo(dataPath);
 
     const uploadedFiles = {
-      images: files.images?.map(file => `/uploads/${file.filename}`) || [],
-      audio: files.audio?.[0] ? `/uploads/${files.audio[0].filename}` : null,
+      images: files.images?.map(file => `/images/${file.filename}`) || [],
+      audio: files.audio?.map(file => `/audio/${file.filename}`) || [],
       video: '/output/output.mp4'
     };
 
@@ -153,7 +137,8 @@ app.post('/api/upload', upload.fields([
 });
 
 // Serve static files from the public directory
-app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
+app.use('/images', express.static(path.join(__dirname, '../public/images')));
+app.use('/audio', express.static(path.join(__dirname, '../public/audio')));
 app.use('/output', express.static(path.join(__dirname, '../public/output')));
 
 app.listen(port, () => {

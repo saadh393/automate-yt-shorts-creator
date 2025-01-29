@@ -1,15 +1,6 @@
-import { Separator } from "@radix-ui/react-dropdown-menu";
 import { AppSidebar } from "./app-sidebar";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "./ui/sidebar";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "./ui/breadcrumb";
 import PromptField from "./ui/prompt-field";
+import { SidebarInset, SidebarProvider } from "./ui/sidebar";
 
 export default function Layout({ children }) {
   return (

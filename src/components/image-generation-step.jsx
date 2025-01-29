@@ -1,47 +1,32 @@
-import { ImageGrid } from "./image-grid";
-import { Button } from "./ui/button";
-import PromptField from "./ui/prompt-field";
+import { useApp } from "@/context/app-provider";
+import { ImageGrid } from "./ui/images/image-grid";
 
-export const ImageGenerationStep = ({
-  images,
-  selectedImages,
-  generating,
-  onGenerate,
-  onSelectImage,
-  onNextStep,
-}) => (
-  <>
-    <PromptField onSubmit={onGenerate} />
+export const ImageGenerationStep = () => {
+  const { generating, images, selectedImages } = useApp();
 
-    {generating ? (
+  if (generating) {
+    return (
       <div className="grid place-items-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+        </div>
       </div>
-    ) : (
-      images.length > 0 && (
+    );
+  }
+
+  if (!generating && images.length === 0) {
+    return null;
+  }
+
+  return (
+    <>
+      {images.length > 0 && (
         <ImageGrid
           title="Generated Images"
           images={images}
           selectedImages={selectedImages}
-          onSelect={onSelectImage}
         />
-      )
-    )}
-
-    {selectedImages.length > 0 && (
-      <>
-        <ImageGrid
-          title="Selected Images"
-          images={selectedImages}
-          selectedImages={selectedImages}
-          onSelect={onSelectImage}
-        />
-        <div className="mt-8">
-          <Button onClick={onNextStep} className="ml-auto">
-            Next Step
-          </Button>
-        </div>
-      </>
-    )}
-  </>
-);
+      )}
+    </>
+  );
+};

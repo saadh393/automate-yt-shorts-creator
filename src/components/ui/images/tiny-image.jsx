@@ -1,15 +1,13 @@
 import { useApp } from "@/context/app-provider";
 import { useState } from "react";
 
-export const ImageItem = ({ image, isSelected }) => {
+export const TinyImage = ({ image }) => {
   const { handleSelectImage } = useApp();
   const [isLoading, setIsLoading] = useState(true);
 
   return (
     <div
-      className={`relative cursor-pointer rounded-lg overflow-hidden  ${
-        isSelected ? "ring-4 ring-primary" : "ring-1 ring-muted-foreground/50"
-      }`}
+      className="relative cursor-pointer rounded-lg overflow-hidden ring ring-white"
       onClick={() => handleSelectImage(image)}
     >
       {isLoading && (
@@ -20,7 +18,7 @@ export const ImageItem = ({ image, isSelected }) => {
       <img
         src={image.url}
         alt={image.prompt}
-        className="w-full h-auto max-w-48 object-none"
+        className="w-full h-auto max-w-28 object-none"
         onLoad={() => setIsLoading(false)}
         style={{ opacity: isLoading ? 0 : 1 }}
       />
