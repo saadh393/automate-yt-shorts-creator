@@ -66,8 +66,8 @@ export default function PromptField({ onSubmit }) {
   };
 
   return (
-    <div className="max-w-5xl mx-auto">
-      <h2 className="scroll-m-20 text-2xl font-extrabold tracking-tight  text-center">
+    <div className="px-4">
+      <h2 className="text-sm font-medium tracking-tight my-2">
         Write your Prompt
       </h2>
 
@@ -85,8 +85,8 @@ export default function PromptField({ onSubmit }) {
           onOpenChange={setIsOpen}
           className="w-full space-y-2"
         >
-          <div className="flex items-center justify-between py-2">
-            <Label className="text-sm font-semibold">Advanced Options</Label>
+          <div className="flex items-center justify-between py-2 ">
+            <Label className="text-xs font-medium">Advanced Options</Label>
             <CollapsibleTrigger asChild>
               <Button variant="ghost" size="sm" className="w-9 p-0">
                 <ChevronDown
@@ -99,16 +99,29 @@ export default function PromptField({ onSubmit }) {
             </CollapsibleTrigger>
           </div>
           <CollapsibleContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="aspect-ratio">Aspect Ratio</Label>
-                <Select value={selectedRatio} onValueChange={handleRatioChange}>
+                <Label htmlFor="aspect-ratio" className="text-xs">
+                  Aspect Ratio
+                </Label>
+                <Select
+                  className="text-xs"
+                  value={selectedRatio}
+                  onValueChange={handleRatioChange}
+                >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select aspect ratio" />
+                    <SelectValue
+                      placeholder="Select aspect ratio"
+                      className="text-xs"
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     {ASPECT_RATIOS.map((ratio) => (
-                      <SelectItem key={ratio.name} value={ratio.name}>
+                      <SelectItem
+                        className="text-xs"
+                        key={ratio.name}
+                        value={ratio.name}
+                      >
                         {ratio.name}
                       </SelectItem>
                     ))}
@@ -117,19 +130,27 @@ export default function PromptField({ onSubmit }) {
               </div>
 
               <div className="space-y-2">
-                <Label>Model</Label>
+                <Label className="text-xs">Model</Label>
                 <Select
+                  className="text-xs"
                   value={config.model}
                   onValueChange={(value) =>
                     setConfig((prev) => ({ ...prev, model: value }))
                   }
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select model" />
+                    <SelectValue
+                      placeholder="Select model"
+                      className="text-xs"
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     {MODEL_OPTIONS.map((model) => (
-                      <SelectItem key={model.value} value={model.value}>
+                      <SelectItem
+                        className="text-xs"
+                        key={model.value}
+                        value={model.value}
+                      >
                         {model.label}
                       </SelectItem>
                     ))}
@@ -139,9 +160,13 @@ export default function PromptField({ onSubmit }) {
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="custom-dimensions">Custom Dimensions</Label>
+                  <Label className="text-xs" htmlFor="custom-dimensions">
+                    Custom Dimensions
+                  </Label>
                   <Switch
+                    className="text-xs"
                     id="custom-dimensions"
+                    size="sm"
                     checked={customDimensions}
                     onCheckedChange={setCustomDimensions}
                   />
@@ -149,8 +174,12 @@ export default function PromptField({ onSubmit }) {
                 {customDimensions && (
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <Label htmlFor="width">Width</Label>
+                      <Label className="text-xs" htmlFor="width">
+                        Width
+                      </Label>
                       <Input
+                        className="text-xs"
+                        size="sm"
                         id="width"
                         type="number"
                         value={config.width}
@@ -186,9 +215,12 @@ export default function PromptField({ onSubmit }) {
                 )}
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="seed">Seed</Label>
+              <div className="space-y-2 flex items-center justify-between">
+                <Label className="text-xs" htmlFor="seed">
+                  Seed
+                </Label>
                 <Input
+                  className="text-xs  w-1/2"
                   id="seed"
                   type="number"
                   value={config.seed}
@@ -201,49 +233,62 @@ export default function PromptField({ onSubmit }) {
                   placeholder="Random seed for generation"
                 />
               </div>
+
               <div className="flex flex-wrap gap-4 mt-4">
                 <div className="flex items-center space-x-2">
                   <Switch
+                    className="text-xs scale-75"
                     id="nologo"
                     checked={config.nologo}
                     onCheckedChange={(checked) =>
                       setConfig((prev) => ({ ...prev, nologo: checked }))
                     }
                   />
-                  <Label htmlFor="nologo">No Logo</Label>
+                  <Label className="text-xs" htmlFor="nologo">
+                    No Logo
+                  </Label>
                 </div>
 
                 <div className="flex items-center space-x-2">
                   <Switch
                     id="enhance"
+                    className="text-xs scale-75"
                     checked={config.enhance}
                     onCheckedChange={(checked) =>
                       setConfig((prev) => ({ ...prev, enhance: checked }))
                     }
                   />
-                  <Label htmlFor="enhance">Enhance Quality</Label>
+                  <Label htmlFor="enhance" className="text-xs">
+                    Enhance Quality
+                  </Label>
                 </div>
 
                 <div className="flex items-center space-x-2">
                   <Switch
                     id="safe"
                     checked={config.safe}
+                    className="text-xs scale-75"
                     onCheckedChange={(checked) =>
                       setConfig((prev) => ({ ...prev, safe: checked }))
                     }
                   />
-                  <Label htmlFor="safe">Safe Mode</Label>
+                  <Label htmlFor="safe" className="text-xs">
+                    Safe Mode
+                  </Label>
                 </div>
 
                 <div className="flex items-center space-x-2">
                   <Switch
                     id="private"
+                    className="text-xs scale-75"
                     checked={config.private}
                     onCheckedChange={(checked) =>
                       setConfig((prev) => ({ ...prev, private: checked }))
                     }
                   />
-                  <Label htmlFor="private">Private Mode</Label>
+                  <Label htmlFor="private" className="text-xs">
+                    Private Mode
+                  </Label>
                 </div>
               </div>
             </div>

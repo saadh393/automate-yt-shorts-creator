@@ -21,8 +21,11 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
+  SidebarMenuButton,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
+import { ChevronsUpDown } from "lucide-react";
 
 // This is sample data.
 const data = {
@@ -32,11 +35,7 @@ const data = {
     avatar: "https://avatars.githubusercontent.com/u/22261152?v=4",
   },
   teams: [
-    {
-      name: "Noxsha",
-      logo: Brush,
-      plan: "Academy",
-    },
+    ,
     {
       name: "Acme Corp.",
       logo: AudioWaveform,
@@ -155,15 +154,30 @@ const data = {
 };
 
 export function AppSidebar({ ...props }) {
+  const [activeTeam, setActiveTeam] = React.useState({
+    name: "Noxsha",
+    logo: Brush,
+    plan: "Academy",
+  });
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <div>
+          <SidebarMenuButton
+            size="lg"
+            className="data-[state=open]:bg-primary data-[state=open]:text-sidebar-accent-foreground"
+          >
+            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-white">
+              <activeTeam.logo className="size-4" />
+            </div>
+            <div className="grid flex-1 text-left text-sm leading-tight">
+              <span className="truncate font-semibold">{activeTeam.name}</span>
+              <span className="truncate text-xs">{activeTeam.plan}</span>
+            </div>
+          </SidebarMenuButton>
+        </div>
       </SidebarHeader>
-      <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
-      </SidebarContent>
+      <SidebarContent>{props.children}</SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />
       </SidebarFooter>
