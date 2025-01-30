@@ -19,6 +19,7 @@ export const MultiAudioComposition = ({ data }) => {
 
   let from = 0;
   const animKeys = Object.keys(animations);
+  console.log(data);
 
   return (
     <AbsoluteFill>

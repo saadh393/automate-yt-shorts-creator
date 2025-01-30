@@ -22,6 +22,7 @@ export default function AppProvider({ children }) {
 
   const handleGenerateImage = async ({ prompt, ...params }) => {
     setState(STATE.GENERATING);
+    setImages([]);
     prepareApiCall(prompt, params)
       .then(setImages)
       .finally(() => setState(STATE.SUCCESS))

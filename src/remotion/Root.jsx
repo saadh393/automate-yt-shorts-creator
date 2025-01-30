@@ -43,6 +43,7 @@ export const RemotionRoot = () => {
   } else {
     duration = data.duration;
   }
+
   return (
     <>
       <Composition

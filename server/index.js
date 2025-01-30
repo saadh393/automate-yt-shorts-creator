@@ -7,6 +7,7 @@ import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { exec } from "child_process";
 import { promisify } from "util";
+import { getAudioDurationInSeconds } from "get-audio-duration";
 
 const execAsync = promisify(exec);
 const __filename = fileURLToPath(import.meta.url);
@@ -38,17 +39,27 @@ async function writeDataJson(files, isMultipleAudio) {
   let data = "";
 
   if (isMultipleAudio) {
-    data = transformUploads(files);
+    data = await transformUploads(files);
   } else {
+    const audioFile = files.audio[0];
+    const audioPath = path.join(
+      __dirname,
+      "../public/uploads",
+      audioFile.filename
+    );
+    const durationInSeconds = await getAudioDurationInSeconds(audioPath);
+
     data = {
       images: files.images?.filename,
-      audio: files.audio[0]?.filename,
-      duration: 5,
+      audio: audioFile.filename,
+      duration: Math.round(durationInSeconds), // Round to nearest second
     };
   }
 
   try {
-    await fs.writeFile(dataPath, JSON.stringify(data, null, 2));
+    let formated = {};
+    formated.data = data;
+    await fs.writeFile(dataPath, JSON.stringify(formated, null, 2));
     console.log("data.json created successfully");
     return dataPath;
   } catch (error) {
@@ -58,7 +69,7 @@ async function writeDataJson(files, isMultipleAudio) {
 }
 
 // Function to render video using Remotion
-async function renderVideo(dataPath) {
+async function renderVideo(dataPath, isMultiAudio) {
   try {
     console.log("Starting video rendering...");
     const outputDir = path.join(__dirname, "../public/output");
@@ -67,11 +78,17 @@ async function renderVideo(dataPath) {
     await fs.mkdir(outputDir, { recursive: true });
 
     // Run Remotion render command
-    const command = `npx remotion render src/remotion/index.js DynamicComposition2 --props="${dataPath}" --output="${path.join(
+    let command = `npx remotion render src/remotion/index.js single-audio --props="${dataPath}" --output="${path.join(
       outputDir,
       "output.mp4"
     )}"`;
-    console.log("Executing command:", command);
+
+    if (isMultiAudio) {
+      command = `npx remotion render src/remotion/index.js multiple-audio --props="${dataPath}" --output="${path.join(
+        outputDir,
+        "output.mp4"
+      )}"`;
+    }
 
     const { stdout, stderr } = await execAsync(command, {
       cwd: path.join(__dirname, ".."),
@@ -168,12 +185,12 @@ app.post(
 
       const isMultipleAudio = req.headers["x-upload-type"] === "multiple";
       const dataPath = await writeDataJson(req.files, isMultipleAudio);
-      const videoPath = await renderVideo(dataPath);
+      const videoPath = await renderVideo(dataPath, isMultipleAudio);
 
       res.json({
         message: "Files uploaded successfully",
         files: req.files,
-        video: "/output/output.mp4",
+        video: videoPath,
       });
     } catch (error) {
       console.error("Error in upload endpoint:", error);
@@ -193,10 +210,9 @@ app.listen(port, () => {
 /**
  * Transforms an upload object containing images and audio files into a formatted array
  * @param {Object} uploadObj - Object containing arrays of image and audio file data
- * @param {number} defaultDuration - Default duration to use for each item
  * @returns {Array} Array of objects with image, audio, and duration properties
  */
-function transformUploads(uploadObj, defaultDuration = 5) {
+async function transformUploads(uploadObj) {
   // Get the arrays of images and audio, or use empty arrays if not present
   const images = uploadObj.images || [];
   const audio = uploadObj.audio || [];
@@ -212,11 +228,29 @@ function transformUploads(uploadObj, defaultDuration = 5) {
     const currentImage = images[i % images.length];
     const currentAudio = audio[i % audio.length];
 
-    result.push({
-      image: currentImage.filename,
-      audio: currentAudio.filename,
-      duration: defaultDuration,
-    });
+    const audioPath = path.join(
+      __dirname,
+      "../public/uploads",
+      currentAudio.filename
+    );
+    try {
+      const durationInSeconds = await getAudioDurationInSeconds(audioPath);
+      result.push({
+        image: currentImage.filename,
+        audio: currentAudio.filename,
+        duration: Math.round(durationInSeconds), // Round to nearest second
+      });
+    } catch (error) {
+      console.error(
+        `Error getting duration for ${currentAudio.filename}:`,
+        error
+      );
+      result.push({
+        image: currentImage.filename,
+        audio: currentAudio.filename,
+        duration: 5, // Fallback to 5 seconds if duration cannot be determined
+      });
+    }
   }
 
   return result;
