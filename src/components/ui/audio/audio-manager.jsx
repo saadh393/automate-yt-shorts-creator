@@ -39,6 +39,7 @@ export default function AudioManager() {
     try {
       setUploading(true);
       setUploadProgress(0);
+      setRenderedVideo(null);
 
       const formData = new FormData();
 
@@ -60,15 +61,13 @@ export default function AudioManager() {
       // Add audio files based on mode
       if (isMultipleAudio) {
         // Filter out any null/undefined entries and add audio files in order
-        multipleAudioFiles
-          .filter(Boolean)
-          .forEach((audioFile, index) => {
-            formData.append(
-              "audio",
-              audioFile,
-              `file-${index}${getFileExtension(audioFile.name)}`
-            );
-          });
+        multipleAudioFiles.filter(Boolean).forEach((audioFile, index) => {
+          formData.append(
+            "audio",
+            audioFile,
+            `file-${index}${getFileExtension(audioFile.name)}`
+          );
+        });
       } else if (audioFile) {
         formData.append(
           "audio",
@@ -80,7 +79,7 @@ export default function AudioManager() {
       const response = await fetch("http://localhost:5000/api/upload", {
         method: "POST",
         headers: {
-          'x-upload-type': isMultipleAudio ? 'multiple' : 'single'
+          "x-upload-type": isMultipleAudio ? "multiple" : "single",
         },
         body: formData,
         onUploadProgress: (progressEvent) => {

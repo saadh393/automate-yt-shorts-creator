@@ -18,7 +18,7 @@ export const TinyImage = ({ image }) => {
       <img
         src={image.url}
         alt={image.prompt}
-        className="w-full h-auto max-w-28 object-none"
+        className="w-full h-auto max-w-28 object-cover"
         onLoad={() => setIsLoading(false)}
         style={{ opacity: isLoading ? 0 : 1 }}
       />

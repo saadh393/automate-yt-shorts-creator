@@ -28,7 +28,6 @@ export default function PartitionManager({ children, selectedImages }) {
             <ResizablePanel defaultSize={bottomPanelSize}>
               <ScrollArea
                 orientation="horizontal"
-                scrollOffset={0}
                 className="whitespace-nowrap py-2"
               >
                 <h1 className="px-4 font-medium text-muted-foreground text-lg">

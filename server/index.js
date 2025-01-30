@@ -1,3 +1,4 @@
+import ffmpeg from "fluent-ffmpeg";
 import express from "express";
 import multer from "multer";
 import path from "path";
@@ -7,7 +8,6 @@ import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { exec } from "child_process";
 import { promisify } from "util";
-import { getAudioDurationInSeconds } from "get-audio-duration";
 
 const execAsync = promisify(exec);
 const __filename = fileURLToPath(import.meta.url);
@@ -47,12 +47,12 @@ async function writeDataJson(files, isMultipleAudio) {
       "../public/uploads",
       audioFile.filename
     );
-    const durationInSeconds = await getAudioDurationInSeconds(audioPath);
+    const durationInSeconds = await getAudioDurationInMs(audioPath);
 
     data = {
-      images: files.images?.filename,
+      images: files.images?.map((image) => image.filename),
       audio: audioFile.filename,
-      duration: Math.round(durationInSeconds), // Round to nearest second
+      duration: durationInSeconds, // Round to nearest second
     };
   }
 
@@ -83,6 +83,7 @@ async function renderVideo(dataPath, isMultiAudio) {
       "output.mp4"
     )}"`;
 
+    console.log("isMultiAudio", isMultiAudio);
     if (isMultiAudio) {
       command = `npx remotion render src/remotion/index.js multiple-audio --props="${dataPath}" --output="${path.join(
         outputDir,
@@ -190,7 +191,7 @@ app.post(
       res.json({
         message: "Files uploaded successfully",
         files: req.files,
-        video: videoPath,
+        video: "/output/output.mp4",
       });
     } catch (error) {
       console.error("Error in upload endpoint:", error);
@@ -198,6 +199,13 @@ app.post(
     }
   }
 );
+
+// Debug edpoint
+app.get("/api/debug", async (req, res) => {
+  const dataPath = path.join(__dirname, "../data.json");
+  const videoPath = await renderVideo(dataPath, true);
+  res.json({ video: videoPath });
+});
 
 // Serve static files
 app.use("/uploads", express.static(path.join(__dirname, "../public/uploads")));
@@ -234,11 +242,11 @@ async function transformUploads(uploadObj) {
       currentAudio.filename
     );
     try {
-      const durationInSeconds = await getAudioDurationInSeconds(audioPath);
+      const durationInSeconds = await getAudioDurationInMs(audioPath);
       result.push({
         image: currentImage.filename,
         audio: currentAudio.filename,
-        duration: Math.round(durationInSeconds), // Round to nearest second
+        duration: durationInSeconds, // Round to nearest second
       });
     } catch (error) {
       console.error(
@@ -254,4 +262,17 @@ async function transformUploads(uploadObj) {
   }
 
   return result;
+}
+
+async function getAudioDurationInMs(filePath) {
+  return new Promise((resolve, reject) => {
+    ffmpeg.ffprobe(filePath, (err, metadata) => {
+      if (err) {
+        reject(err);
+      } else {
+        const durationInMs = metadata.format.duration * 1000; // Convert seconds to milliseconds
+        resolve(durationInMs);
+      }
+    });
+  });
 }

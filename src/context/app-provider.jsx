@@ -10,7 +10,7 @@ export default function AppProvider({ children }) {
   const [state, setState] = useState(STATE.IDLE);
   const [error, setError] = useState(null);
   const [images, setImages] = useState([]);
-  const [route, setRoute] = useState(ROUTES.AUDIO);
+  const [route, setRoute] = useState(ROUTES.HOME);
   const [selectedImages, setSelectedImages] = useState([]);
   const [audioFile, setAudioFile] = useState(null);
   const [isMultipleAudio, setIsMultipleAudio] = useState(false);
@@ -22,6 +22,7 @@ export default function AppProvider({ children }) {
 
   const handleGenerateImage = async ({ prompt, ...params }) => {
     setState(STATE.GENERATING);
+    setRoute(ROUTES.HOME);
     setImages([]);
     prepareApiCall(prompt, params)
       .then(setImages)

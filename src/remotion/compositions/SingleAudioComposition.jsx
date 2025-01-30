@@ -17,13 +17,12 @@ export const SingleAudioComposition = ({ data }) => {
     return <AbsoluteFill></AbsoluteFill>;
   }
 
-  const { images, audio, duration } = data;
+  const { images, audio } = data;
 
   const frame = useCurrentFrame();
-  const { fps, width, height, durationInFrames } = useVideoConfig();
+  const { durationInFrames } = useVideoConfig();
 
   let from = 0;
-  console.log(durationInFrames);
   const eachDuration = durationInFrames / images.length;
   const animKeys = Object.keys(animations);
 
@@ -53,4 +52,16 @@ export const SingleAudioComposition = ({ data }) => {
       <Audio src={staticFile(`/uploads/${audio}`)} />
     </AbsoluteFill>
   );
+};
+
+export const calculateSingleCompositionMetadata = ({ props }) => {
+  const totalDurationMs = props.data.duration;
+  const totalDurationSeconds = totalDurationMs / 1000;
+  const fps = 30;
+  return {
+    durationInFrames: Math.ceil(totalDurationSeconds * fps),
+    fps,
+    width: 1080,
+    height: 1920,
+  };
 };

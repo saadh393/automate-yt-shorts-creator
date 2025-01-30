@@ -1,8 +1,14 @@
 import { AbsoluteFill, Composition, staticFile } from "remotion";
 import { getAudioDurationInSeconds } from "@remotion/media-utils";
-import { MultiAudioComposition } from "./compositions/MultiAudioComposition";
+import {
+  calculateMetadata,
+  MultiAudioComposition,
+} from "./compositions/MultiAudioComposition";
 import AudioComposition from "./compositions/AudioComposition";
-import { SingleAudioComposition } from "./compositions/SingleAudioComposition";
+import {
+  calculateSingleCompositionMetadata,
+  SingleAudioComposition,
+} from "./compositions/SingleAudioComposition";
 
 export const RemotionRoot = () => {
   const data = {
@@ -44,25 +50,21 @@ export const RemotionRoot = () => {
     duration = data.duration;
   }
 
+  console.log("duration");
+
   return (
     <>
       <Composition
         id="single-audio"
         component={SingleAudioComposition}
-        durationInFrames={Math.ceil(duration) * 30} // Adjust based on average duration
-        fps={30}
-        width={1080}
-        height={1920}
         defaultProps={{ data }}
+        calculateMetadata={calculateSingleCompositionMetadata}
       />
       <Composition
         id="multiple-audio"
         component={MultiAudioComposition}
-        durationInFrames={Math.ceil(duration) * 30} // Adjust based on average duration
-        fps={30}
-        width={1080}
-        height={1920}
         defaultProps={{ data }}
+        calculateMetadata={calculateMetadata}
       />
     </>
   );

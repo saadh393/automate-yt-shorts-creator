@@ -7,7 +7,7 @@ export const ImageItem = ({ image, isSelected }) => {
 
   return (
     <div
-      className={`relative cursor-pointer rounded-lg overflow-hidden  ${
+      className={`relative cursor-pointer rounded-lg overflow-hidden min-h-[300px] ${
         isSelected ? "ring-4 ring-primary" : "ring-1 ring-muted-foreground/50"
       }`}
       onClick={() => handleSelectImage(image)}
@@ -20,7 +20,7 @@ export const ImageItem = ({ image, isSelected }) => {
       <img
         src={image.url}
         alt={image.prompt}
-        className="w-full h-auto max-w-48 object-none"
+        className="w-full h-auto max-w-48 object-cover"
         onLoad={() => setIsLoading(false)}
         style={{ opacity: isLoading ? 0 : 1 }}
       />
