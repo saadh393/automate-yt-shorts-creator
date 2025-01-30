@@ -1,11 +1,17 @@
-{
-  "images": [
-    "file-0.png",
-    "file-1.png"
-  ],
-  "audio": [
-    "file-0.wav",
-    "file-1.wav"
-  ],
-  "duration": 10
-}
+[
+  {
+    "image": "file-0.png",
+    "audio": "file-0.wav",
+    "duration": 5
+  },
+  {
+    "image": "file-1.png",
+    "audio": "file-1.wav",
+    "duration": 5
+  },
+  {
+    "image": "file-2.png",
+    "audio": "file-2.wav",
+    "duration": 5
+  }
+]

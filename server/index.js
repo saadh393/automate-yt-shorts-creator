@@ -35,11 +35,17 @@ async function cleanDirectory(directory) {
 // Function to write data.json
 async function writeDataJson(files, isMultipleAudio) {
   const dataPath = path.join(__dirname, "../data.json");
-  const data = {
-    images: files.images?.map((file) => file.filename) || [],
-    audio: files.audio?.map((file) => file.filename) || [],
-    duration: 10,
-  };
+  let data = "";
+
+  if (isMultipleAudio) {
+    data = transformUploads(files);
+  } else {
+    data = {
+      images: files.images?.filename,
+      audio: files.audio[0]?.filename,
+      duration: 5,
+    };
+  }
 
   try {
     await fs.writeFile(dataPath, JSON.stringify(data, null, 2));
@@ -183,3 +189,35 @@ app.use("/output", express.static(path.join(__dirname, "../public/output")));
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+
+/**
+ * Transforms an upload object containing images and audio files into a formatted array
+ * @param {Object} uploadObj - Object containing arrays of image and audio file data
+ * @param {number} defaultDuration - Default duration to use for each item
+ * @returns {Array} Array of objects with image, audio, and duration properties
+ */
+function transformUploads(uploadObj, defaultDuration = 5) {
+  // Get the arrays of images and audio, or use empty arrays if not present
+  const images = uploadObj.images || [];
+  const audio = uploadObj.audio || [];
+
+  // Get the maximum length between images and audio arrays
+  const maxLength = Math.max(images.length, audio.length);
+
+  // Create the transformed array
+  const result = [];
+
+  for (let i = 0; i < maxLength; i++) {
+    // Get current image and audio, or use the last one if index exceeds array length
+    const currentImage = images[i % images.length];
+    const currentAudio = audio[i % audio.length];
+
+    result.push({
+      image: currentImage.filename,
+      audio: currentAudio.filename,
+      duration: defaultDuration,
+    });
+  }
+
+  return result;
+}
