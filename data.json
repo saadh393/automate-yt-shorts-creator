@@ -1,9 +1,11 @@
 {
   "images": [
-    "image-1.png",
-    "image-2.png",
-    "image-3.png"
+    "file-0.png",
+    "file-1.png"
   ],
-  "audio": "audio.wav",
+  "audio": [
+    "file-0.wav",
+    "file-1.wav"
+  ],
   "duration": 10
 }
