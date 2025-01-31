@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ROUTES, STATE } from "@/lib/constants";
 import prepareApiCall from "@/lib/prepare-api-call";
 import { createContext } from "react";
@@ -6,19 +6,54 @@ import { useContext } from "react";
 
 const AppContext = createContext();
 
+// Load saved state from localStorage
+const loadSavedState = () => {
+  const savedState = localStorage.getItem('appState');
+  return savedState ? JSON.parse(savedState) : null;
+};
+
+// Save state to localStorage
+const saveState = (state) => {
+  localStorage.setItem('appState', JSON.stringify(state));
+};
+
 export default function AppProvider({ children }) {
-  const [state, setState] = useState(STATE.IDLE);
+  // Initialize all persisted state using lazy initialization
+  const [state, setState] = useState(() => {
+    const saved = loadSavedState();
+    return saved?.state || STATE.IDLE;
+  });
+
+  const [route, setRoute] = useState(() => {
+    const saved = loadSavedState();
+    return saved?.route || ROUTES.HOME;
+  });
+
+  const [isMultipleAudio, setIsMultipleAudio] = useState(() => {
+    const saved = loadSavedState();
+    return saved?.isMultipleAudio || false;
+  });
+
+  // Non-persisted state
   const [error, setError] = useState(null);
   const [images, setImages] = useState([]);
-  const [route, setRoute] = useState(ROUTES.HOME);
   const [selectedImages, setSelectedImages] = useState([]);
   const [audioFile, setAudioFile] = useState(null);
-  const [isMultipleAudio, setIsMultipleAudio] = useState(false);
   const [multipleAudioFiles, setMultipleAudioFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [renderedVideo, setRenderedVideo] = useState(null);
   const [generating, setGenerating] = useState(false);
+
+  // Save state changes to localStorage
+  useEffect(() => {
+    const stateToSave = {
+      state,
+      route,
+      isMultipleAudio
+    };
+    saveState(stateToSave);
+  }, [state, route, isMultipleAudio]);
 
   const handleGenerateImage = async ({ prompt, ...params }) => {
     setState(STATE.GENERATING);

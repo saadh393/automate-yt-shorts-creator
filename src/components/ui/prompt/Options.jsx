@@ -14,14 +14,14 @@ import {
   SelectValue,
 } from "../select";
 import { Switch } from "../switch";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "../input";
 
 const ASPECT_RATIOS = [
   { name: "Square (1:1)", width: 1024, height: 1024 },
   { name: "Portrait (9:16)", width: 1080, height: 1920 },
-  { name: "Landscape (3:2)", width: 1536, height: 1024 },
   { name: "Wide (16:9)", width: 1920, height: 1080 },
+  { name: "Landscape (3:2)", width: 1536, height: 1024 },
   { name: "Custom", width: 1080, height: 1920 },
 ];
 
@@ -30,9 +30,46 @@ const MODEL_OPTIONS = [
   { value: "turbo", label: "Turbo" },
 ];
 
+// Load saved options from localStorage
+const loadSavedOptions = () => {
+  const savedOptions = localStorage.getItem("appOptions");
+  return savedOptions ? JSON.parse(savedOptions) : null;
+};
+
+// Save options to localStorage
+const saveOptions = (options) => {
+  localStorage.setItem("appOptions", JSON.stringify(options));
+};
+
 export default function Options({ isOpen, setIsOpen, setConfig, config }) {
-  const [selectedRatio, setSelectedRatio] = useState("Portrait (9:16)");
-  const [customDimensions, setCustomDimensions] = useState(false);
+  // Initialize state with values from localStorage using lazy initialization
+  const [selectedRatio, setSelectedRatio] = useState(() => {
+    const savedOptions = loadSavedOptions();
+    return savedOptions?.aspectRatio || "Portrait (9:16)";
+  });
+
+  const [customDimensions, setCustomDimensions] = useState(() => {
+    const savedOptions = loadSavedOptions();
+    return savedOptions?.customDimensions || false;
+  });
+
+  // Load saved config on mount only if it doesn't exist
+  useEffect(() => {
+    const savedOptions = loadSavedOptions();
+    if (savedOptions?.config && !config) {
+      setConfig(savedOptions.config);
+    }
+  }, []);
+
+  // Save options whenever they change
+  function updateOptionsLS() {
+    const options = {
+      aspectRatio: selectedRatio,
+      customDimensions,
+      config,
+    };
+    saveOptions(options);
+  }
 
   const handleRatioChange = (ratio) => {
     setSelectedRatio(ratio);
@@ -43,6 +80,7 @@ export default function Options({ isOpen, setIsOpen, setConfig, config }) {
         width: selected.width,
         height: selected.height,
       }));
+      updateOptionsLS();
     }
   };
 
