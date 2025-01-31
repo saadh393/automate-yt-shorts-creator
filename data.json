@@ -1,19 +1,10 @@
 {
-  "data": [
-    {
-      "image": "file-0.png",
-      "audio": "file-0.wav",
-      "duration": 5568
-    },
-    {
-      "image": "file-1.png",
-      "audio": "file-1.wav",
-      "duration": 8256
-    },
-    {
-      "image": "file-2.png",
-      "audio": "file-2.wav",
-      "duration": 7285.333
-    }
-  ]
+  "data": {
+    "images": [
+      "images-1738298340027-297914193.png",
+      "images-1738298340034-915553170.png"
+    ],
+    "audio": "audio-1738298340036-197730849.wav",
+    "duration": 4682.667
+  }
 }

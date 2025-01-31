@@ -23,14 +23,30 @@ export default function ImageGenerate() {
           .map(async () => {
             const uniqueSeed = generateRandomSeed();
             const baseParams = { ...params, seed: uniqueSeed };
-            return {
-              url: createImageUrl(prompt, baseParams, 350, 350),
-              highResUrl: createImageUrl(
+            
+            // Using proxy for image generation
+            const response = await fetch('/api/generate', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
                 prompt,
-                baseParams,
-                params.width || 1024,
-                params.height || 1024
-              ),
+                ...baseParams,
+                width: params.width || 1024,
+                height: params.height || 1024
+              })
+            });
+            
+            if (!response.ok) {
+              throw new Error('Failed to generate image');
+            }
+            
+            const data = await response.json();
+            
+            return {
+              url: data.imageUrl,
+              highResUrl: data.highResUrl,
               seed: uniqueSeed,
               prompt: prompt,
               config: baseParams,

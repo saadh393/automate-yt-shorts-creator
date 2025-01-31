@@ -50,43 +50,33 @@ export default function AudioManager() {
         return { blob, index };
       });
 
-      // Wait for all image conversions to complete
       const imageBlobs = await Promise.all(imagePromises);
 
-      // Add images in order
+      // Add images to formData
       imageBlobs.forEach(({ blob, index }) => {
-        formData.append("images", blob, `file-${index}.png`);
+        formData.append("images", blob, `image-${index}.png`);
       });
 
-      // Add audio files based on mode
+      // Add audio files to formData
       if (isMultipleAudio) {
-        // Filter out any null/undefined entries and add audio files in order
-        multipleAudioFiles.filter(Boolean).forEach((audioFile, index) => {
-          formData.append(
-            "audio",
-            audioFile,
-            `file-${index}${getFileExtension(audioFile.name)}`
-          );
+        multipleAudioFiles.forEach((file, index) => {
+          if (file) {
+            formData.append("audio", file);
+          }
         });
       } else if (audioFile) {
-        formData.append(
-          "audio",
-          audioFile,
-          `audio${getFileExtension(audioFile.name)}`
-        );
+        formData.append("audio", audioFile);
       }
 
-      const response = await fetch("http://localhost:5000/api/upload", {
+      formData.append("isMultipleAudio", isMultipleAudio);
+
+      // Upload files using proxy
+      const response = await fetch("/api/upload", {
         method: "POST",
-        headers: {
-          "x-upload-type": isMultipleAudio ? "multiple" : "single",
-        },
         body: formData,
         onUploadProgress: (progressEvent) => {
-          const percentCompleted = Math.round(
-            (progressEvent.loaded * 100) / progressEvent.total
-          );
-          setUploadProgress(percentCompleted);
+          const progress = (progressEvent.loaded / progressEvent.total) * 100;
+          setUploadProgress(Math.round(progress));
         },
       });
 
@@ -95,10 +85,10 @@ export default function AudioManager() {
       }
 
       const data = await response.json();
-      setRenderedVideo(data.video);
+      setRenderedVideo(data.videoUrl);
+      setRoute(ROUTES.PREVIEW);
     } catch (error) {
-      console.error("Upload error:", error);
-      // You might want to show an error message to the user here
+      console.error("Error uploading files:", error);
     } finally {
       setUploading(false);
     }
