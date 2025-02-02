@@ -34,8 +34,8 @@ async function cleanDirectory(directory) {
 }
 
 // Function to write data.json
-async function writeDataJson(files, isMultipleAudio) {
-  const dataPath = path.join(__dirname, "../data.json");
+async function writeDataJson(files, isMultipleAudio, uploadId) {
+  const dataPath = path.join(__dirname, `../data/data-${uploadId}.json`);
   let data = "";
 
   if (isMultipleAudio) {
@@ -69,7 +69,7 @@ async function writeDataJson(files, isMultipleAudio) {
 }
 
 // Function to render video using Remotion
-async function renderVideo(dataPath, isMultiAudio) {
+async function renderVideo(dataPath, isMultiAudio, uploadId) {
   try {
     console.log("Starting video rendering...");
     const outputDir = path.join(__dirname, "../public/output");
@@ -80,14 +80,14 @@ async function renderVideo(dataPath, isMultiAudio) {
     // Run Remotion render command
     let command = `npx remotion render src/remotion/index.js single-audio --props="${dataPath}" --output="${path.join(
       outputDir,
-      "output.mp4"
+      `output-${uploadId}.mp4`
     )}"`;
 
     console.log("isMultiAudio", isMultiAudio);
     if (isMultiAudio) {
       command = `npx remotion render src/remotion/index.js multiple-audio --props="${dataPath}" --output="${path.join(
         outputDir,
-        "output.mp4"
+        `output-${uploadId}.mp4`
       )}"`;
     }
 
@@ -99,12 +99,46 @@ async function renderVideo(dataPath, isMultiAudio) {
     console.log("Render stdout:", stdout);
     if (stderr) console.error("Render stderr:", stderr);
 
-    return path.join(outputDir, "output.mp4");
+    return path.join(outputDir, `output-${uploadId}.mp4`);
   } catch (error) {
     console.error("Error rendering video:", error);
     throw error;
   }
 }
+
+// Function to clean temporary files after video generation
+async function cleanupTempFiles(uploadId) {
+  try {
+    // Clean up uploads
+    const uploadsDir = path.join(__dirname, "../public/uploads");
+    const files = await fs.readdir(uploadsDir);
+    for (const file of files) {
+      await fs.unlink(path.join(uploadsDir, file));
+    }
+    console.log("Cleaned up uploads directory");
+
+    // Clean up data json
+    const dataFile = path.join(__dirname, `../data/data-${uploadId}.json`);
+    await fs.unlink(dataFile);
+    console.log("Cleaned up data file:", dataFile);
+  } catch (error) {
+    console.error("Error cleaning up temporary files:", error);
+  }
+}
+
+// Function to clean output directory
+async function cleanOutputDirectory() {
+  try {
+    const outputDir = path.join(__dirname, "../public/output");
+    await cleanDirectory(outputDir);
+    console.log("Cleaned output directory");
+  } catch (error) {
+    console.error("Error cleaning output directory:", error);
+  }
+}
+
+// Clean output directory when server starts
+cleanOutputDirectory();
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -156,26 +190,34 @@ const upload = multer({
 });
 
 // Clean up directory before each upload
-app.use(async (req, res, next) => {
-  if (req.path === "/api/upload" && req.method === "POST") {
-    try {
-      await cleanDirectory(path.join(__dirname, "../public/uploads"));
-    } catch (error) {
-      console.error("Error cleaning directory:", error);
-    }
-  }
-  next();
-});
+// app.use(async (req, res, next) => {
+//   if (req.path === "/api/upload" && req.method === "POST") {
+//     try {
+//       // await cleanDirectory(path.join(__dirname, "../public/uploads"));
+//     } catch (error) {
+//       console.error("Error cleaning directory:", error);
+//     }
+//   }
+//   next();
+// });
 
 // Upload endpoint
 app.post(
   "/api/upload",
   upload.fields([
-    { name: "images", maxCount: 10 },
-    { name: "audio", maxCount: 10 },
+    { name: "images", maxCount: 20 },
+    { name: "audio", maxCount: 20 },
   ]),
   async (req, res) => {
     try {
+      const uploadId = req.body.uploadId;
+      if (!uploadId) {
+        throw new Error("Upload ID is required");
+      }
+
+      const isMultipleAudio = req.body.isMultipleAudio === "true";
+      const isQueueUpload = req.body.isQueueUpload === "true";
+
       if (!req.files || !req.files.images) {
         return res.status(400).json({ error: "No images were uploaded." });
       }
@@ -184,17 +226,33 @@ app.post(
         return res.status(400).json({ error: "No audio files were uploaded." });
       }
 
-      const isMultipleAudio = req.headers["x-upload-type"] === "multiple";
-      const dataPath = await writeDataJson(req.files, isMultipleAudio);
-      const videoPath = await renderVideo(dataPath, isMultipleAudio);
+      // Write data.json with the files information
+      const dataPath = await writeDataJson(
+        req.files,
+        isMultipleAudio,
+        uploadId
+      );
 
+      // Only render video if it's not a queue upload
+      let videoUrl = null;
+      if (!isQueueUpload) {
+        await renderVideo(dataPath, isMultipleAudio, uploadId);
+        videoUrl = `/output/output-${uploadId}.mp4`;
+
+        // Clean up temporary files
+        // await cleanupTempFiles(uploadId);
+      }
+
+      // Return response
       res.json({
-        message: "Files uploaded successfully",
-        files: req.files,
-        video: "/output/output.mp4",
+        success: true,
+        videoUrl,
+        message: isQueueUpload
+          ? "Files queued successfully"
+          : "Video rendered successfully",
       });
     } catch (error) {
-      console.error("Error in upload endpoint:", error);
+      console.error("Error processing upload:", error);
       res.status(500).json({ error: error.message });
     }
   }

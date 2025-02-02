@@ -8,13 +8,13 @@ const AppContext = createContext();
 
 // Load saved state from localStorage
 const loadSavedState = () => {
-  const savedState = localStorage.getItem('appState');
+  const savedState = localStorage.getItem("appState");
   return savedState ? JSON.parse(savedState) : null;
 };
 
 // Save state to localStorage
 const saveState = (state) => {
-  localStorage.setItem('appState', JSON.stringify(state));
+  localStorage.setItem("appState", JSON.stringify(state));
 };
 
 export default function AppProvider({ children }) {
@@ -44,13 +44,20 @@ export default function AppProvider({ children }) {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [renderedVideo, setRenderedVideo] = useState(null);
   const [generating, setGenerating] = useState(false);
+  const [uploadId, setUploadId] = useState(null);
+
+  const generateUploadId = () => {
+    const randomId = Date.now().toString();
+    setUploadId(randomId);
+    return randomId;
+  };
 
   // Save state changes to localStorage
   useEffect(() => {
     const stateToSave = {
       state,
       route,
-      isMultipleAudio
+      isMultipleAudio,
     };
     saveState(stateToSave);
   }, [state, route, isMultipleAudio]);
@@ -59,7 +66,7 @@ export default function AppProvider({ children }) {
     setState(STATE.GENERATING);
     setRoute(ROUTES.HOME);
     setImages([]);
-    prepareApiCall(prompt, params)
+    prepareApiCall(prompt, params, 6)
       .then(setImages)
       .finally(() => setState(STATE.SUCCESS))
       .catch((error) => {
@@ -106,6 +113,8 @@ export default function AppProvider({ children }) {
         setUploadProgress,
         setRenderedVideo,
         setGenerating,
+        uploadId,
+        generateUploadId,
       }}
     >
       {children}

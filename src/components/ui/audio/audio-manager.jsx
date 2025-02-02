@@ -4,8 +4,11 @@ import { Button } from "@/components/ui/button";
 import { useApp } from "@/context/app-provider";
 import { ROUTES } from "@/lib/constants";
 import { AudioUpload } from "../audio-upload";
+import { useToast } from "@/components/ui/use-toast";
+import { Toaster } from "@/components/ui/toaster";
 
 export default function AudioManager() {
+  const { toast } = useToast();
   const {
     uploading,
     uploadProgress,
@@ -21,6 +24,7 @@ export default function AudioManager() {
     setUploadProgress,
     setRenderedVideo,
     audioFile,
+    generateUploadId,
   } = useApp();
 
   const handleAudioSelect = (file, imageIndex) => {
@@ -35,13 +39,15 @@ export default function AudioManager() {
     }
   };
 
-  const handleUpload = async () => {
+  const handleUpload = async (isQueueUpload = false) => {
     try {
       setUploading(true);
       setUploadProgress(0);
       setRenderedVideo(null);
 
       const formData = new FormData();
+      const uploadId = generateUploadId();
+      formData.append("uploadId", uploadId);
 
       // Convert all images to blobs and wait for them to complete
       const imagePromises = selectedImages.map(async (image, index) => {
@@ -69,6 +75,7 @@ export default function AudioManager() {
       }
 
       formData.append("isMultipleAudio", isMultipleAudio);
+      formData.append("isQueueUpload", isQueueUpload);
 
       // Upload files using proxy
       const response = await fetch("/api/upload", {
@@ -85,10 +92,27 @@ export default function AudioManager() {
       }
 
       const data = await response.json();
-      setRenderedVideo(data.videoUrl);
-      setRoute(ROUTES.PREVIEW);
+      
+      // Show success message
+      toast({
+        title: data.message,
+        description: isQueueUpload
+          ? "Your files have been queued successfully. You can queue more or generate videos."
+          : "Your video has been generated successfully. Redirecting to preview...",
+        variant: "success",
+      });
+
+      if (!isQueueUpload && data.videoUrl) {
+        setRenderedVideo(data.videoUrl);
+        setRoute(ROUTES.PREVIEW);
+      }
     } catch (error) {
       console.error("Error uploading files:", error);
+      toast({
+        title: "Upload Failed",
+        description: error.message || "There was an error uploading your files. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setUploading(false);
     }
@@ -102,6 +126,7 @@ export default function AudioManager() {
 
   return (
     <div className="space-y-6">
+      <Toaster />
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <Switch
@@ -138,14 +163,14 @@ export default function AudioManager() {
           </div>
 
           <div className="">
-            <div className="container max-w-7xl mx-auto">
+            <div className="flex gap-4 justify-center">
               <Button
                 onClick={handleUpload}
                 disabled={
                   uploading ||
-                  multipleAudioFiles.length !== selectedImages.length
+                  multipleAudioFiles.length !== selectedImages.length ||
+                  selectedImages.length === 0
                 }
-                className="w-full"
               >
                 {uploading ? (
                   <div className="flex items-center space-x-2">
@@ -162,18 +187,26 @@ export default function AudioManager() {
                   }/${selectedImages.length})`
                 )}
               </Button>
+
+              <Button
+                variant="outline"
+                onClick={() => handleUpload(true)}
+                disabled={
+                  uploading ||
+                  multipleAudioFiles.length !== selectedImages.length ||
+                  selectedImages.length === 0
+                }
+              >
+                Queue New Upload
+              </Button>
             </div>
           </div>
         </div>
       ) : (
         <div>
           <AudioUpload onAudioSelect={setAudioFile} />
-          <div className="mt-6">
-            <Button
-              onClick={handleUpload}
-              disabled={uploading}
-              className="w-full"
-            >
+          <div className="mt-6 flex gap-4 justify-center">
+            <Button onClick={() => handleUpload(false)} disabled={uploading || !audioFile}>
               {uploading ? (
                 <div className="flex items-center space-x-2">
                   <span>
@@ -186,6 +219,9 @@ export default function AudioManager() {
               ) : (
                 "Upload Audio and Generate Video"
               )}
+            </Button>
+            <Button variant="outline" disabled={uploading || !audioFile}>
+              Queue New Upload
             </Button>
           </div>
         </div>
