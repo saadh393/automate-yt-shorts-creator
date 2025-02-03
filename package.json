@@ -44,6 +44,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-resizable-panels": "^2.1.7",
+    "react-router": "^7.1.5",
     "remotion": "^4.0.251",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7"
