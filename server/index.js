@@ -3,13 +3,10 @@ import express from "express";
 import { promises as fs } from "fs";
 import multer from "multer";
 import path from "path";
-import { fileURLToPath } from "url";
 
 import { uploadConfig } from "./config.js";
+import { OUTPUT_DIR, UPLOADS_DIR } from "./config/paths.js";
 import uploadController from "./controller/upload.controller.js";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const app = express();
 const port = 5000;
@@ -22,10 +19,9 @@ app.use(cors());
 // Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: async function (req, file, cb) {
-    const dir = path.join(__dirname, "../public/uploads");
     try {
-      await fs.mkdir(dir, { recursive: true });
-      cb(null, dir);
+      await fs.mkdir(UPLOADS_DIR, { recursive: true });
+      cb(null, UPLOADS_DIR);
     } catch (error) {
       cb(error, null);
     }
@@ -72,8 +68,8 @@ const upload = multer({
 app.post("/api/upload", upload.fields(uploadConfig), uploadController);
 
 // Serve static files
-app.use("/uploads", express.static(path.join(__dirname, "../public/uploads")));
-app.use("/output", express.static(path.join(__dirname, "../public/output")));
+app.use("/uploads", express.static(UPLOADS_DIR));
+app.use("/output", express.static(OUTPUT_DIR));
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
