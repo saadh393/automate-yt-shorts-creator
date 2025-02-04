@@ -5,16 +5,20 @@ import SelectedImages from "../ui/images/selected-images";
 import { ROUTES } from "@/lib/constants";
 import ImageGenerate from "../image-generate";
 import AudioManager from "../ui/audio/audio-manager";
+import PromptField from "../ui/prompt-field";
 
-export default function Home() {
+export default function HomeManager() {
   const { selectedImages, route } = useApp();
 
   if (route === ROUTES.HOME) {
     return (
-      <PartitionManager selectedImages={selectedImages}>
-        <ImageGenerationStep />
-        <SelectedImages />
-      </PartitionManager>
+      <>
+        <PromptField />
+        <PartitionManager selectedImages={selectedImages}>
+          <ImageGenerationStep />
+          <SelectedImages />
+        </PartitionManager>
+      </>
     );
   }
 

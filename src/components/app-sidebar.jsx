@@ -1,31 +1,27 @@
+import { Brush } from "lucide-react";
 import * as React from "react";
-import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
-  Settings2,
-  Brush,
-} from "lucide-react";
 
-import { NavProjects } from "@/components/nav-projects";
-import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
-import { TeamSwitcher } from "@/components/team-switcher";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
+  SidebarMenu,
   SidebarMenuButton,
+  SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
-import { ChevronsUpDown } from "lucide-react";
+import {
+  AudioWaveformIcon,
+  CheckCheckIcon,
+  Home,
+  Hourglass,
+} from "lucide-react";
+import { Link } from "react-router";
 
 // This is sample data.
 const data = {
@@ -34,124 +30,31 @@ const data = {
     email: "saadh393@learnwithsumit.com",
     avatar: "https://avatars.githubusercontent.com/u/22261152?v=4",
   },
-  teams: [
-    ,
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
-  navMain: [
-    {
-      title: "Playground",
-      url: "#",
-      icon: AudioWaveform,
-      isActive: true,
-      items: [
-        {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Models",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
-    },
-  ],
 };
+
+// Menu items.
+const items = [
+  {
+    title: "Generate Image",
+    url: "/",
+    icon: Home,
+  },
+  {
+    title: "Generate Audio",
+    url: "/audio",
+    icon: AudioWaveformIcon,
+  },
+  {
+    title: "Queue List",
+    url: "/queue",
+    icon: Hourglass,
+  },
+  {
+    title: "Rendered",
+    url: "/rendered",
+    icon: CheckCheckIcon,
+  },
+];
 
 export function AppSidebar({ ...props }) {
   const [activeTeam, setActiveTeam] = React.useState({
@@ -176,6 +79,24 @@ export function AppSidebar({ ...props }) {
             </div>
           </SidebarMenuButton>
         </div>
+
+        <SidebarGroup className="p-0 my-6">
+          <SidebarGroupLabel>Application</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {items.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild tooltip={item.title}>
+                    <Link to={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarHeader>
       <SidebarContent>{props.children}</SidebarContent>
       <SidebarFooter>
