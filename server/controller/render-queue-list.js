@@ -49,6 +49,13 @@ async function renderVideo(inputProps, uploadId) {
       codec: "h264",
       outputLocation: outputPath,
       inputProps: inputProps,
+      onProgress: ({ progress }) => {
+        // Convert progress from 0-1 to percentage
+        const percentage = Math.floor(progress * 100);
+        console.log(`Rendering progress for video ${uploadId}: ${percentage}%`);
+        // If you have WebSocket set up, you can emit progress
+        // global.io.emit('renderProgress', { uploadId, progress: percentage });
+      },
     });
 
     return outputPath;
