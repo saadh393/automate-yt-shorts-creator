@@ -7,7 +7,7 @@ export const TinyImage = ({ image }) => {
 
   return (
     <div
-      className="relative cursor-pointer rounded-lg overflow-hidden ring ring-white"
+      className="relative cursor-pointer rounded-lg overflow-hidden ring ring-white max-w-28 max-h-40"
       onClick={() => handleSelectImage(image)}
     >
       {isLoading && (
@@ -18,7 +18,7 @@ export const TinyImage = ({ image }) => {
       <img
         src={image.url}
         alt={image.prompt}
-        className="w-full h-auto max-w-28 object-cover"
+        className="w-full h-auto  object-cover"
         onLoad={() => setIsLoading(false)}
         style={{ opacity: isLoading ? 0 : 1 }}
       />

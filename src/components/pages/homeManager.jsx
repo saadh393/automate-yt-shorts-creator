@@ -10,19 +10,14 @@ import PromptField from "../ui/prompt-field";
 export default function HomeManager() {
   const { selectedImages, route } = useApp();
 
-  if (route === ROUTES.HOME) {
-    return (
-      <>
+  return (
+    <>
+      <div className="grid grid-cols-3 gap-6">
         <PromptField />
-        <PartitionManager selectedImages={selectedImages}>
-          <ImageGenerationStep />
-          <SelectedImages />
-        </PartitionManager>
-      </>
-    );
-  }
-
-  if (route === ROUTES.AUDIO) {
-    return <AudioManager />;
-  }
+        <SelectedImages />
+      </div>
+      <ImageGenerationStep />
+      <AudioManager />
+    </>
+  );
 }

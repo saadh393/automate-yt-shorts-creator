@@ -45,11 +45,18 @@ export default function AppProvider({ children }) {
   const [renderedVideo, setRenderedVideo] = useState(null);
   const [generating, setGenerating] = useState(false);
   const [uploadId, setUploadId] = useState(null);
+  const [prompt, setPrompt] = useState("");
 
   const generateUploadId = () => {
-    const randomId = Date.now().toString();
-    setUploadId(randomId);
-    return randomId;
+    let dateTime = new Date().toLocaleString();
+    dateTime = dateTime
+      .replace(/:/g, "-")
+      .replace(/\//g, "-")
+      .replace(/ /g, "-")
+      .replace(/\,/g, "_");
+    const generatedId = prompt.replace(/\s/g, "-") + "_" + dateTime;
+    setUploadId(generatedId);
+    return generatedId;
   };
 
   // Save state changes to localStorage
@@ -64,8 +71,8 @@ export default function AppProvider({ children }) {
 
   const handleGenerateImage = async ({ prompt, ...params }) => {
     setState(STATE.GENERATING);
-    setRoute(ROUTES.HOME);
     setImages([]);
+    setPrompt(prompt);
     prepareApiCall(prompt, params, 6)
       .then(setImages)
       .finally(() => setState(STATE.SUCCESS))

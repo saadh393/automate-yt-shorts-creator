@@ -1,5 +1,6 @@
 import renderVideo from "../util/renderVideo.js";
 import writeDataJson from "../util/writeDataJson.js";
+import fs from "fs/promises";
 
 export default async function uploadController(req, res) {
   try {
@@ -26,6 +27,20 @@ export default async function uploadController(req, res) {
     let videoUrl = null;
     if (!isQueueUpload) {
       await renderVideo(dataPath, isMultipleAudio, uploadId);
+
+      // Delete the data.json after rendering
+      await fs.unlink(dataPath);
+
+      // Delete the audio files after rendering
+      for (const file of req.files.audio) {
+        await fs.unlink(file.path);
+      }
+
+      // Delete the image files after rendering
+      for (const file of req.files.images) {
+        await fs.unlink(file.path);
+      }
+
       videoUrl = `/output/output-${uploadId}.mp4`;
     }
 

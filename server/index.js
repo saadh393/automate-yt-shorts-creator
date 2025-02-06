@@ -7,6 +7,8 @@ import path from "path";
 import { uploadConfig } from "./config.js";
 import { OUTPUT_DIR, UPLOADS_DIR } from "./config/paths.js";
 import uploadController from "./controller/upload.controller.js";
+import queueListController from "./controller/queue-list.js";
+import renderQueueListController from "./controller/render-queue-list.js";
 
 const app = express();
 const port = 5000;
@@ -66,6 +68,10 @@ const upload = multer({
 
 // Upload endpoint
 app.post("/api/upload", upload.fields(uploadConfig), uploadController);
+
+app.get("/api/queue_list", queueListController);
+
+app.get("/api/render-queue-list", renderQueueListController);
 
 // Serve static files
 app.use("/uploads", express.static(UPLOADS_DIR));
