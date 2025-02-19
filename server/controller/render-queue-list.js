@@ -22,8 +22,18 @@ export default async function renderQueueListController() {
   );
 
   data.map(async (d, index) => {
-    const response = await renderVideo(d, index);
-    console.log(response);
+    
+    let file_name = index+1 + '_'
+    if(d.data){
+      if(typeof d.data.audio == "string"){
+        file_name += d.data.audio.split(".")[0]
+      }else{
+        file_name += d.data.audio[0].file_name.split(".")[0]
+      }
+    }
+
+    const response = await renderVideo(d, file_name);
+    
   });
 }
 
@@ -31,8 +41,6 @@ async function renderVideo(inputProps, uploadId) {
   try {
     // Bundle the video project
     const bundled = await bundle(REMOTION_INDEX);
-
-    console.log(inputProps);
 
     // Select the composition
     const composition = await selectComposition({

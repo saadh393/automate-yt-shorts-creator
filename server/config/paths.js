@@ -20,7 +20,7 @@ export const REMOTION_INDEX = path.join(SRC_DIR, "remotion/index.js");
 
 // Export a function to get output video path
 export const getOutputVideoPath = (uploadId) =>
-  path.join(OUTPUT_DIR, `output-${uploadId}.mp4`);
+  path.join(OUTPUT_DIR, `${uploadId}.mp4`);
 
 // Export a function to ensure all required directories exist
 export async function ensureDirectories() {

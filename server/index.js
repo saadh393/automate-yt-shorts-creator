@@ -11,7 +11,7 @@ import queueListController from "./controller/queue-list.js";
 import renderQueueListController from "./controller/render-queue-list.js";
 
 const app = express();
-const port = 5000;
+const port = 9000;
 
 // Increase the limit for file uploads
 app.use(express.json({ limit: "50mb" }));
@@ -51,10 +51,11 @@ const storage = multer.diskStorage({
         cb(null, filename);
       }
     } else {
-      // For single audio mode, use simple unique names
-      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+      // For single audio mode, keep original name with short random suffix
       const ext = path.extname(file.originalname);
-      cb(null, file.fieldname + "-" + uniqueSuffix + ext);
+      const nameWithoutExt = path.basename(file.originalname, ext);
+      const shortRandomSuffix = Math.floor(Math.random() * 10000);
+      cb(null, `${nameWithoutExt}-${shortRandomSuffix}${ext}`);
     }
   },
 });
@@ -72,6 +73,8 @@ app.post("/api/upload", upload.fields(uploadConfig), uploadController);
 app.get("/api/queue_list", queueListController);
 
 app.get("/api/render-queue-list", renderQueueListController);
+
+renderQueueListController()
 
 // Serve static files
 app.use("/uploads", express.static(UPLOADS_DIR));
