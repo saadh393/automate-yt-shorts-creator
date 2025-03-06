@@ -1,4 +1,7 @@
 # Logs
+*.mp4
+*.wav
+public/uploads/*.png
 logs
 *.log
 npm-debug.log*
