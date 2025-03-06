@@ -5,7 +5,7 @@ export default async function prepareApiCall(prompt, params, count = 10) {
     Array(params.imageCount || count)
       .fill(null)
       .map(async () => {
-        const uniqueSeed = 2; //generateRandomSeed();
+        const uniqueSeed = generateRandomSeed();
         const baseParams = { ...params, seed: uniqueSeed };
         return {
           url: createImageUrl(

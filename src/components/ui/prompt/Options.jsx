@@ -245,25 +245,7 @@ export default function Options({ isOpen, setIsOpen, setConfig, config }) {
             )}
           </div>
 
-          <div className="space-y-2 flex items-center justify-between">
-            <Label className="text-xs" htmlFor="seed">
-              Seed
-            </Label>
-            <Input
-              className="text-xs  w-1/2"
-              id="seed"
-              type="number"
-              value={config.seed}
-              onChange={(e) =>
-                setConfig((prev) => ({
-                  ...prev,
-                  seed: parseInt(e.target.value),
-                }))
-              }
-              placeholder="Random seed for generation"
-            />
-          </div>
-
+         
           <div className="flex flex-wrap gap-4 mt-4">
             <div className="flex items-center space-x-2">
               <Switch

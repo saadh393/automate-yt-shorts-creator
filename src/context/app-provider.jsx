@@ -119,6 +119,7 @@ export default function AppProvider({ children }) {
         setUploading,
         setUploadProgress,
         setRenderedVideo,
+        setSelectedImages,
         setGenerating,
         uploadId,
         generateUploadId,
