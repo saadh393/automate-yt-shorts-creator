@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "clean": "node scripts/cleanup.js",
-    "dev": "npm run clean && concurrently \"npm run dev:client\" \"npm run dev:server\"",
+    "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
     "preview": "npm run clean && concurrently \"npm run preview:client\" \"npm run dev:server\"",
     "dev:client": "vite",
     "dev:server": "node server/index.js",

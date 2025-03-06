@@ -1,6 +1,7 @@
 /public/output/*
 /public/uploads/*
 /out/*
+/data/*
 
 # Logs
 logs
