@@ -26,7 +26,7 @@ export const ImageGenerationStep = () => {
         <h3 className="text-xl font-semibold text-muted-foreground">
           Generated Images
         </h3>
-        <Button onClick={() => setRoute(ROUTES.AUDIO)}>Next</Button>
+       
       </div>
 
       {images.length > 0 && (

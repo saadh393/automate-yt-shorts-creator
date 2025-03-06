@@ -16,6 +16,8 @@ import {
 import { Switch } from "../switch";
 import { useState, useEffect } from "react";
 import { Input } from "../input";
+import { Slider } from "../slider";
+import { flushSync } from "react-dom";
 
 const ASPECT_RATIOS = [
   { name: "Square (1:1)", width: 1024, height: 1024 },
@@ -38,6 +40,7 @@ const loadSavedOptions = () => {
 
 // Save options to localStorage
 const saveOptions = (options) => {
+  console.log(options)
   localStorage.setItem("appOptions", JSON.stringify(options));
 };
 
@@ -51,6 +54,11 @@ export default function Options({ isOpen, setIsOpen, setConfig, config }) {
   const [customDimensions, setCustomDimensions] = useState(() => {
     const savedOptions = loadSavedOptions();
     return savedOptions?.customDimensions || false;
+  });
+
+  const [imageCount, setImageCount] = useState(() => {
+    const savedOptions = loadSavedOptions();
+    return savedOptions?.imageCount || 12;
   });
 
   // Load saved config on mount only if it doesn't exist
@@ -67,6 +75,7 @@ export default function Options({ isOpen, setIsOpen, setConfig, config }) {
       aspectRatio: selectedRatio,
       customDimensions,
       config,
+      imageCount
     };
     saveOptions(options);
   }
@@ -84,6 +93,14 @@ export default function Options({ isOpen, setIsOpen, setConfig, config }) {
     }
   };
 
+  const handleSeek = ([value]) => {
+    setImageCount(value);
+    setConfig((prev) => ({
+      ...prev,
+      imageCount: value,
+    }));
+  }
+
   return (
     <Collapsible
       open={isOpen}
@@ -95,9 +112,8 @@ export default function Options({ isOpen, setIsOpen, setConfig, config }) {
         <CollapsibleTrigger asChild>
           <Button variant="ghost" size="sm" className="w-9 p-0">
             <ChevronDown
-              className={`h-4 w-4 transition-transform duration-200 ${
-                isOpen ? "transform rotate-180" : ""
-              }`}
+              className={`h-4 w-4 transition-transform duration-200 ${isOpen ? "transform rotate-180" : ""
+                }`}
             />
             <span className="sr-only">Toggle</span>
           </Button>
@@ -105,6 +121,18 @@ export default function Options({ isOpen, setIsOpen, setConfig, config }) {
       </div>
       <CollapsibleContent className="space-y-4">
         <div className="space-y-4">
+          <div className="space-y-4">
+            <Label htmlFor="aspect-ratio" className="text-xs">
+              Load Image - {imageCount}
+            </Label>
+            <Slider
+              defaultValue={[imageCount]}
+              max={100}
+              step={1}
+              onValueCommit={updateOptionsLS}
+              onValueChange={handleSeek}
+            />
+          </div>
           <div className="space-y-2">
             <Label htmlFor="aspect-ratio" className="text-xs">
               Aspect Ratio
