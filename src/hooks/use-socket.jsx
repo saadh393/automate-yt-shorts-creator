@@ -45,6 +45,16 @@ export function useSocket() {
       }));
     });
 
+    socket.on('renderAborted', (data) => {
+      const keys= Object.keys(renderStatus);
+      let obj = {}
+      const newStatus = keys.reduce((acc, key) => {
+        return { ...acc, [key]: { status: 'aborted', progress: 0 } };
+      }, obj);
+
+      setRenderStatus(newStatus)
+    });
+
     return () => {
       socket.off('connect');
       socket.off('disconnect');
@@ -52,6 +62,7 @@ export function useSocket() {
       socket.off('renderProgress');
       socket.off('renderComplete');
       socket.off('renderError');
+      socket.off('renderAborted');
     };
   }, []);
 
