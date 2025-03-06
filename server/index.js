@@ -55,6 +55,7 @@ const storage = multer.diskStorage({
       const ext = path.extname(file.originalname);
       const nameWithoutExt = path.basename(file.originalname, ext);
       const shortRandomSuffix = Math.floor(Math.random() * 10000);
+      req.audioFileName = nameWithoutExt;
       cb(null, `${nameWithoutExt}-${shortRandomSuffix}${ext}`);
     }
   },
@@ -74,7 +75,7 @@ app.get("/api/queue_list", queueListController);
 
 app.get("/api/render-queue-list", renderQueueListController);
 
-renderQueueListController()
+// renderQueueListController()
 
 // Serve static files
 app.use("/uploads", express.static(UPLOADS_DIR));

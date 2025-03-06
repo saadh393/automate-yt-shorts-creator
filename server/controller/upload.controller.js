@@ -4,7 +4,8 @@ import fs from "fs/promises";
 
 export default async function uploadController(req, res) {
   try {
-    const uploadId = req.body.uploadId;
+    const uploadId = req.audioFileName;
+
     if (!uploadId) {
       throw new Error("Upload ID is required");
     }
@@ -41,7 +42,7 @@ export default async function uploadController(req, res) {
         await fs.unlink(file.path);
       }
 
-      videoUrl = `/output/output-${uploadId}.mp4`;
+      videoUrl = `/output/${uploadId}.mp4`;
     }
 
     // Return response

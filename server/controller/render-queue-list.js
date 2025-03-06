@@ -7,12 +7,16 @@ import {
 } from "../config/paths.js";
 import fs from "fs/promises";
 import path from "path";
+import { EventEmitter } from "events";
+
+// Increase EventEmitter limit to prevent warnings
+EventEmitter.defaultMaxListeners = 50;
 
 export default async function renderQueueListController() {
-  // Sccan data folder to .json files
+  // Scan data folder for .json files
   const files = await fs.readdir(DATA_DIR);
 
-  //   Read all the data.json files and store in array
+  // Read all the data.json files and store in array
   const data = await Promise.all(
     files.map(async (file) => {
       const dataPath = path.join(DATA_DIR, file);
@@ -21,20 +25,29 @@ export default async function renderQueueListController() {
     })
   );
 
-  data.map(async (d, index) => {
+  // Process videos sequentially using for...of loop instead of map
+  for (let index = 0; index < data.length; index++) {
+    const d = data[index];
     
-    let file_name = index+1 + '_'
-    if(d.data){
-      if(typeof d.data.audio == "string"){
-        file_name += d.data.audio.split(".")[0]
-      }else{
-        file_name += d.data.audio[0].file_name.split(".")[0]
+    let file_name = "";
+    if (d.data) {
+      if (typeof d.data.audio == "string") {
+        file_name += d.data.audio.split(".")[0];
+      } else {
+        file_name += d.data.audio[0].file_name.split(".")[0];
       }
     }
 
-    const response = await renderVideo(d, file_name);
-    
-  });
+    console.log(`Starting render for video ${file_name}`);
+    try {
+      // Wait for each video to finish before starting the next one
+      const response = await renderVideo(d, file_name);
+      console.log(`Completed rendering video ${file_name}`);
+    } catch (error) {
+      console.error(`Failed to render video ${file_name}:`, error);
+      // Continue with next video even if one fails
+    }
+  }
 }
 
 async function renderVideo(inputProps, uploadId) {
