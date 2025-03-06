@@ -3,6 +3,8 @@ import express from "express";
 import { promises as fs } from "fs";
 import multer from "multer";
 import path from "path";
+import http from "http";
+import { Server } from "socket.io";
 
 import { uploadConfig } from "./config.js";
 import { OUTPUT_DIR, UPLOADS_DIR } from "./config/paths.js";
@@ -12,6 +14,17 @@ import renderQueueListController from "./controller/render-queue-list.js";
 
 const app = express();
 const port = 9000;
+
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
+
+// Make socket.io instance globally available
+global.io = io;
 
 // Increase the limit for file uploads
 app.use(express.json({ limit: "50mb" }));
@@ -81,6 +94,6 @@ app.get("/api/render-queue-list", renderQueueListController);
 app.use("/uploads", express.static(UPLOADS_DIR));
 app.use("/output", express.static(OUTPUT_DIR));
 
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

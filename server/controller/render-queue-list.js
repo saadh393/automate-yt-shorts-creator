@@ -52,6 +52,12 @@ export default async function renderQueueListController() {
 
 async function renderVideo(inputProps, uploadId) {
   try {
+    // Notify frontend that rendering is starting
+    global.io.emit('renderStart', { uploadId });
+    console.log(
+      `Rendering video with audio: ${uploadId} `
+    )
+
     // Bundle the video project
     const bundled = await bundle(REMOTION_INDEX);
 
@@ -73,14 +79,15 @@ async function renderVideo(inputProps, uploadId) {
       onProgress: ({ progress }) => {
         // Convert progress from 0-1 to percentage
         const percentage = Math.floor(progress * 100);
-        console.log(`Rendering progress for video ${uploadId}: ${percentage}%`);
-        // If you have WebSocket set up, you can emit progress
-        // global.io.emit('renderProgress', { uploadId, progress: percentage });
+        global.io.emit('renderProgress', { uploadId, progress: percentage });
       },
     });
 
+    global.io.emit('renderComplete', { uploadId, outputPath });
+
     return outputPath;
   } catch (error) {
+    global.io.emit('renderError', { uploadId, error: error.message });
     console.error("Error rendering video:", error);
     throw error;
   }

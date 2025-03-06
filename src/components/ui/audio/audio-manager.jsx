@@ -38,17 +38,18 @@ export default function AudioManager() {
     <div className="space-y-6">
       <Toaster />
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
+        {/* <div className="flex items-center space-x-2">
           <Switch
             id="multiple-audio"
             checked={isMultipleAudio}
             onCheckedChange={setIsMultipleAudio}
           />
           <Label htmlFor="multiple-audio">Upload Multiple Audio Files</Label>
-        </div>
+        </div> */}
       </div>
 
-      {isMultipleAudio ? <MultiAudioCards /> : <SingleAudioCard />}
+      {/* {isMultipleAudio ? <MultiAudioCards /> : <SingleAudioCard />} */}
+      <SingleAudioCard />
       <UploadButton />
 
       {renderedVideo && <RenderedVideo />}
