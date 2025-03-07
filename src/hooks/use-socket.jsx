@@ -9,6 +9,15 @@ export function useSocket() {
   const [renderStatus, setRenderStatus] = useState({});
 
   useEffect(() => {
+    // Connect explicitly when component mounts
+    if (!socket.connected) {
+      socket.connect();
+    }
+
+    if(socket.connected && !isConnected) {
+      setIsConnected(true);
+    }
+
     socket.on('connect', () => {
       setIsConnected(true);
     });
@@ -25,6 +34,7 @@ export function useSocket() {
     });
 
     socket.on('renderProgress', (data) => {
+
       setRenderStatus(prev => ({
         ...prev,
         [data.uploadId]: { status: 'rendering', progress: data.progress }
@@ -69,6 +79,11 @@ export function useSocket() {
   return {
     socket,
     isConnected,
-    renderStatus
+    renderStatus,
+    connect: () => {
+      if (!socket.connected) {
+        socket.connect();
+      }
+    }
   };
 }

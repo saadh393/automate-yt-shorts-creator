@@ -12,12 +12,12 @@ export default function QueuePageManager() {
   const [queueList, setQueueList] = useState([]);
   const [isStoppingRender, setIsStoppingRender] = useState(false);
   const { toast } = useToast();
-  const { isConnected, renderStatus } = useSocket();
+  const { isConnected, renderStatus, connect } = useSocket();
 
   async function refreshPage() {
     try {
       const data = await getQueueList();
-
+      console.log(data)
       setQueueList(
         data.map((d, i) => {
           let title = d.split("data-")[1].split(".json")[0].trim();
@@ -55,6 +55,7 @@ export default function QueuePageManager() {
 
   useEffect(() => {
     refreshPage();
+    connect()
   }, []);
 
   async function handleStopRendering() {

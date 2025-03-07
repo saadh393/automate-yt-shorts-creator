@@ -4,6 +4,7 @@ import {
   DATA_DIR,
   getOutputVideoPath,
   REMOTION_INDEX,
+  UPLOADS_DIR,
 } from "../config/paths.js";
 import fs from "fs/promises";
 import path from "path";
@@ -15,7 +16,7 @@ EventEmitter.defaultMaxListeners = 50;
 // Track active render processes
 const activeRenders = new Map();
 
-const {cancelSignal, cancel} = makeCancelSignal();
+const { cancelSignal, cancel } = makeCancelSignal();
 
 // Function to stop all active renders
 export function stopAllRenders() {
@@ -47,6 +48,7 @@ export default async function renderQueueListController(req, res) {
 
   // Scan data folder for .json files
   const files = await fs.readdir(DATA_DIR);
+  console.log("files", files);
 
   // Read all the data.json files and store in array
   const data = await Promise.all(
@@ -57,6 +59,8 @@ export default async function renderQueueListController(req, res) {
     })
   );
 
+  console.log("Data", data);
+
   // Return immediately to not block the request
   if (res) {
     res.json({ success: true, message: `Starting render for ${data.length} videos` });
@@ -66,22 +70,22 @@ export default async function renderQueueListController(req, res) {
   for (let index = 0; index < data.length; index++) {
     const d = data[index];
 
-    let file_name = "";
-    if (d.data) {
-      if (typeof d.data.audio == "string") {
-        file_name += d.data.audio.split(".")[0];
-      } else {
-        file_name += d.data.audio[0].file_name.split(".")[0];
-      }
-    }
-
-    console.log(`Starting render for video ${file_name}`);
+    let file_name = d.data.audio.split(".")[0] // audio_file.mp3 => [audio_file, mp3]
+    
     try {
-     
+
       // Wait for each video to finish before starting the next one
       await renderVideo(d, file_name);
       const dataFileName = `data-${file_name}.json`;
       const dataPath = path.join(DATA_DIR, dataFileName);
+
+      // delete the images
+      d.data.images.forEach(async (image) => {
+        await fs.unlink(path.join(UPLOADS_DIR, image));
+      });
+
+      // Delete the audio
+      await fs.unlink(path.join(UPLOADS_DIR, d.data.audio));
 
       // Delete the data file after rendering
       await fs.unlink(dataPath);
@@ -152,7 +156,7 @@ async function renderVideo(inputProps, uploadId) {
       global.io.emit('renderError', { uploadId, error: error.message });
       console.error(`Error rendering video ${uploadId}:`, error);
     }
-    
+
     // Clean up the controller after error
     activeRenders.delete(uploadId);
     throw error;
