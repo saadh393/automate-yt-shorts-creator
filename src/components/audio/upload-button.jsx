@@ -18,7 +18,6 @@ export default function UploadButton() {
   const { toast } = useToast();
 
   const handleUpload = async (isQueueUpload = false) => {
-    console.log("handleUpload");
     try {
       setUploading(true);
       setUploadProgress(0);
@@ -27,6 +26,7 @@ export default function UploadButton() {
       const formData = new FormData();
       const uploadId = generateUploadId();
       formData.append("uploadId", uploadId);
+      console.log(audioFile)
 
       // Convert all images to blobs and wait for them to complete
       const imagePromises = selectedImages.map(async (image, index) => {
@@ -52,6 +52,7 @@ export default function UploadButton() {
       } else if (audioFile) {
         formData.append("audio", audioFile);
       }
+
 
       formData.append("isMultipleAudio", isMultipleAudio);
       formData.append("isQueueUpload", isQueueUpload);

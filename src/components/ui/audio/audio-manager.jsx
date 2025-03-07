@@ -12,16 +12,6 @@ import { ROUTES } from "@/lib/constants";
 export default function AudioManager() {
   const {
     renderedVideo,
-    setRoute,
-    selectedImages,
-    isMultipleAudio,
-    setIsMultipleAudio,
-    multipleAudioFiles,
-    setUploading,
-    setUploadProgress,
-    setRenderedVideo,
-    audioFile,
-    generateUploadId,
   } = useApp();
 
   // Helper function to get file extension
