@@ -80,6 +80,12 @@ export default async function renderQueueListController(req, res) {
      
       // Wait for each video to finish before starting the next one
       await renderVideo(d, file_name);
+      const dataFileName = `data-${file_name}.json`;
+      const dataPath = path.join(DATA_DIR, dataFileName);
+
+      // Delete the data file after rendering
+      await fs.unlink(dataPath);
+
     } catch (error) {
       if (error.name === 'AbortError') {
         console.log(`Rendering aborted for ${file_name}`);
