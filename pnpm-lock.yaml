@@ -59,15 +59,24 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: ^1.1.7
         version: 1.1.8(@types/react-dom@18.3.5(@types/react@18.3.18))(@types/react@18.3.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@remotion/animation-utils':
+        specifier: 4.0.260
+        version: 4.0.260(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@remotion/bundler':
         specifier: ^4.0.260
         version: 4.0.271(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@remotion/captions':
+        specifier: 4.0.273
+        version: 4.0.273
       '@remotion/cli':
         specifier: ^4.0.260
         version: 4.0.271(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@remotion/install-whisper-cpp':
         specifier: 4.0.260
         version: 4.0.260
+      '@remotion/layout-utils':
+        specifier: 4.0.273
+        version: 4.0.273
       '@remotion/media-utils':
         specifier: ^4.0.260
         version: 4.0.271(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -123,8 +132,8 @@ importers:
         specifier: ^7.1.5
         version: 7.2.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       remotion:
-        specifier: ^4.0.251
-        version: 4.0.271(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^4.0.260
+        version: 4.0.260(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       socket.io:
         specifier: ^4.8.1
         version: 4.8.1
@@ -975,6 +984,12 @@ packages:
   '@radix-ui/rect@1.1.0':
     resolution: {integrity: sha512-A9+lCBZoaMJlVKcRBz2YByCG+Cp2t6nAnMnNba+XiWxnj6r4JUFqfsgwocMBZU9LPtdxC6wB56ySYpc7LQIoJg==}
 
+  '@remotion/animation-utils@4.0.260':
+    resolution: {integrity: sha512-4In75V8srvQAByIWBBDPmwoxg/w1Uwh0kHp8xwB7NbJaNsBK2RCoaWlKtkaqHhyQWqnx7vNV2etOfKs7mmiwTw==}
+    peerDependencies:
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+
   '@remotion/bundler@4.0.271':
     resolution: {integrity: sha512-LTphyJVc8jrSv5ugX9IJ8RStyoqC9XsmeamkGJwEq9TfwEkIUE6GOtV6/1kCNFOgFYLtuOwA95n2LOITDjPDiQ==}
     peerDependencies:
@@ -983,6 +998,9 @@ packages:
 
   '@remotion/captions@4.0.260':
     resolution: {integrity: sha512-GhsJ6eJTAEAdADVETOqQ2SMyjGviBYiBbtFP2s2VVJLHH2TxTW+dFlhUnR5Ku2jl+SUTMiAMulG9IcXkGE0dIg==}
+
+  '@remotion/captions@4.0.273':
+    resolution: {integrity: sha512-IT+oRHSQIym/bewO9LnrW/c65ZMd26hCbJlM2HhswhTTWZnPwslcVMYU8GM3k4xow1hqmu5eoMDfmAEpPmvidg==}
 
   '@remotion/cli@4.0.271':
     resolution: {integrity: sha512-sLAdvdUTGlq39wxi8+CL16pHqd0nlP0VrQUTgWuGbT7LM1KVuHuYAylzSjwwh2Gz/Q6sLZAHCV3xIjJu9c6fWA==}
@@ -1028,6 +1046,9 @@ packages:
 
   '@remotion/install-whisper-cpp@4.0.260':
     resolution: {integrity: sha512-ZltvtYifr5Df9/cGEbj0E+BU8zD5Mia4OBKVAn2KZ1Xriy0pqSkGb/fC5hUTE7bdRsgqN47l5tUQBq+MhUtP2A==}
+
+  '@remotion/layout-utils@4.0.273':
+    resolution: {integrity: sha512-eig3dtHBU7S4C65rJVrRbAuF6gtVS7KmftNpkh4WQ/uCGZ/iPKjsh1RUj/wu06elmez3jPSgMCHhFE9GAqsuYg==}
 
   '@remotion/media-parser@4.0.271':
     resolution: {integrity: sha512-s28Cn6J34ssr1ozV5dsPukKBnEItVZuT5d7IkuiMYzxlvJeIciYuLc3i047puTRuxF8Aw50RSwPwqlab2EBxFA==}
@@ -2810,6 +2831,12 @@ packages:
     resolution: {integrity: sha512-dYqgNSZbDwkaJ2ceRd9ojCGjBq+mOm9LmtXnAnEGyHhN/5R7iDW2TRw3h+o/jCFxus3P2LfWIIiwowAjANm7IA==}
     engines: {node: '>= 0.4'}
 
+  remotion@4.0.260:
+    resolution: {integrity: sha512-QjKTNHJtv427KSspwQPzsB91oxCMFr9IS49kK+UbaU9Jb2IAFGrDXtLRU22m9Wmetm3L22jy08J1Gwlp13Z58Q==}
+    peerDependencies:
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+
   remotion@4.0.271:
     resolution: {integrity: sha512-gBwa9fnAFXze0Qoub+pOjKQSNxYG3GvlVhcK3gDH1YSwunkKxZbbtou3mCc0YBtknzk0OwQpqE6u+qXfG/IKfA==}
     peerDependencies:
@@ -4116,6 +4143,12 @@ snapshots:
 
   '@radix-ui/rect@1.1.0': {}
 
+  '@remotion/animation-utils@4.0.260(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      remotion: 4.0.260(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+
   '@remotion/bundler@4.0.271(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@remotion/studio': 4.0.271(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -4138,6 +4171,8 @@ snapshots:
       - webpack-cli
 
   '@remotion/captions@4.0.260': {}
+
+  '@remotion/captions@4.0.273': {}
 
   '@remotion/cli@4.0.271(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
@@ -4186,6 +4221,8 @@ snapshots:
   '@remotion/install-whisper-cpp@4.0.260':
     dependencies:
       '@remotion/captions': 4.0.260
+
+  '@remotion/layout-utils@4.0.273': {}
 
   '@remotion/media-parser@4.0.271': {}
 
@@ -6173,6 +6210,11 @@ snapshots:
       get-proto: 1.0.1
       gopd: 1.2.0
       set-function-name: 2.0.2
+
+  remotion@4.0.260(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
 
   remotion@4.0.271(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:

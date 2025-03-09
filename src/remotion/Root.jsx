@@ -1,26 +1,14 @@
 import { AbsoluteFill, Composition, staticFile } from "remotion";
 import { getAudioDurationInSeconds } from "@remotion/media-utils";
-import {
-  calculateMetadata,
-  MultiAudioComposition,
-} from "./compositions/MultiAudioComposition";
+import { calculateMetadata, MultiAudioComposition } from "./compositions/MultiAudioComposition";
 import AudioComposition from "./compositions/AudioComposition";
-import {
-  calculateSingleCompositionMetadata,
-  SingleAudioComposition,
-} from "./compositions/SingleAudioComposition";
+import { calculateSingleCompositionMetadata, SingleAudioComposition } from "./compositions/SingleAudioComposition";
 
 export const RemotionRoot = () => {
   const data = {
-    images: [
-      "images-1738215890909-799181728.png",
-      "images-1738215890910-505443069.png",
-      "4.jpeg",
-      "5.jpeg",
-      "6.jpeg",
-    ],
-    audio: "audio-1738215890913-136000804.wav",
-    duration: 10,
+    images: ["public/image-0-1744.png", "image-1-9402.png"],
+    audio: "speech_saad.wav",
+    duration: 5283.265,
   };
 
   const data2 = [
@@ -60,12 +48,7 @@ export const RemotionRoot = () => {
         defaultProps={{ data }}
         calculateMetadata={calculateSingleCompositionMetadata}
       />
-      <Composition
-        id="multiple-audio"
-        component={MultiAudioComposition}
-        defaultProps={{ data }}
-        calculateMetadata={calculateMetadata}
-      />
+      <Composition id="multiple-audio" component={MultiAudioComposition} defaultProps={{ data }} calculateMetadata={calculateMetadata} />
     </>
   );
 };
