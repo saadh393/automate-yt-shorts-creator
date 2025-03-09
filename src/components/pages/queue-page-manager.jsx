@@ -17,16 +17,19 @@ export default function QueuePageManager() {
   async function refreshPage() {
     try {
       const data = await getQueueList();
-      console.log(data)
-      setQueueList(
-        data.map((d, i) => {
-          let title = d.split("data-")[1].split(".json")[0].trim();
+      console.log(typeof(Object.values(data)))
+      const updated = Object.values(data).map((d, i) => {
+        let title = d.split("data-")[1].split(".json")[0].trim();
+        console.log(d)
 
-          // Uppercase first letter
-          let utitle = title.charAt(0).toUpperCase() + title.slice(1);
-          return { fileName: d, title: utitle, id: title };
-        })
-      );
+        // Uppercase first letter
+        let utitle = title.charAt(0).toUpperCase() + title.slice(1);
+        return { fileName: d, title: utitle, id: title };
+      });
+      console.log(updated)
+      setQueueList(updated);
+
+     
     } catch (error) {
       toast({
         variant: "destructive",
