@@ -1,5 +1,5 @@
 import { AppSidebar } from "./app-sidebar";
-import PromptField from "./ui/prompt-field";
+import PromptField from "./home-page/prompt-field";
 import { SidebarInset, SidebarProvider } from "./ui/sidebar";
 
 export default function Layout({ children }) {

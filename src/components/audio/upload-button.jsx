@@ -1,6 +1,5 @@
 import { useApp } from "@/context/app-provider";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
 
 export default function UploadButton() {
   const {
@@ -15,7 +14,6 @@ export default function UploadButton() {
     setRenderedVideo,
     generateUploadId,
   } = useApp();
-  const { toast } = useToast();
 
   const handleUpload = async (isQueueUpload = false) => {
     try {
@@ -26,7 +24,7 @@ export default function UploadButton() {
       const formData = new FormData();
       const uploadId = generateUploadId();
       formData.append("uploadId", uploadId);
-      console.log(audioFile)
+      console.log(audioFile);
 
       // Convert all images to blobs and wait for them to complete
       const imagePromises = selectedImages.map(async (image, index) => {
@@ -53,7 +51,6 @@ export default function UploadButton() {
         formData.append("audio", audioFile);
       }
 
-
       formData.append("isMultipleAudio", isMultipleAudio);
       formData.append("isQueueUpload", isQueueUpload);
 
@@ -73,27 +70,11 @@ export default function UploadButton() {
 
       const data = await response.json();
 
-      // Show success message
-      toast({
-        title: data.message,
-        description: isQueueUpload
-          ? "Your files have been queued successfully. You can queue more or generate videos."
-          : "Your video has been generated successfully. Redirecting to preview...",
-        variant: "success",
-      });
-
       if (!isQueueUpload && data.videoUrl) {
         setRenderedVideo(data.videoUrl);
       }
     } catch (error) {
       console.error("Error uploading files:", error);
-      toast({
-        title: "Upload Failed",
-        description:
-          error.message ||
-          "There was an error uploading your files. Please try again.",
-        variant: "destructive",
-      });
     } finally {
       setUploading(false);
     }
@@ -101,28 +82,17 @@ export default function UploadButton() {
 
   return (
     <div className="mt-6 flex gap-4 justify-center">
-      <Button
-        onClick={() => handleUpload(false)}
-        disabled={uploading || !audioFile}
-      >
+      <Button onClick={() => handleUpload(false)} disabled={uploading || !audioFile}>
         {uploading ? (
           <div className="flex items-center space-x-2">
-            <span>
-              {uploadProgress < 100
-                ? `Processing... ${uploadProgress}%`
-                : "Finalizing..."}
-            </span>
+            <span>{uploadProgress < 100 ? `Processing... ${uploadProgress}%` : "Finalizing..."}</span>
             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
           </div>
         ) : (
           "Upload Audio and Generate Video"
         )}
       </Button>
-      <Button
-        variant="outline"
-        onClick={() => handleUpload(true)}
-        disabled={uploading || selectedImages.length === 0}
-      >
+      <Button variant="outline" onClick={() => handleUpload(true)} disabled={uploading || selectedImages.length === 0}>
         Queue New Upload
       </Button>
     </div>

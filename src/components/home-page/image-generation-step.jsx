@@ -1,7 +1,5 @@
 import { useApp } from "@/context/app-provider";
-import { ImageGrid } from "./ui/images/image-grid";
-import { Button } from "./ui/button";
-import { ROUTES } from "@/lib/constants";
+import { ImageGrid } from "@/components/ui/images/image-grid";
 
 export const ImageGenerationStep = () => {
   const { generating, images, selectedImages, setRoute } = useApp();
@@ -23,19 +21,10 @@ export const ImageGenerationStep = () => {
   return (
     <>
       <div className="py-3 flex justify-between items-center">
-        <h3 className="text-xl font-semibold text-muted-foreground">
-          Generated Images
-        </h3>
-       
+        <h3 className="text-xl font-semibold text-muted-foreground">Generated Images</h3>
       </div>
 
-      {images.length > 0 && (
-        <ImageGrid
-          title="Generated Images"
-          images={images}
-          selectedImages={selectedImages}
-        />
-      )}
+      {images.length > 0 && <ImageGrid title="Generated Images" images={images} selectedImages={selectedImages} />}
     </>
   );
 };

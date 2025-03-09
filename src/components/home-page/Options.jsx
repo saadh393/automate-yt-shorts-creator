@@ -1,23 +1,12 @@
 import { ChevronDown } from "lucide-react";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "../collapsible";
-import { Label } from "../label";
-import { Button } from "../button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../select";
-import { Switch } from "../switch";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { useState, useEffect } from "react";
-import { Input } from "../input";
-import { Slider } from "../slider";
-import { flushSync } from "react-dom";
+import { Input } from "@/components/ui/input";
+import { Slider } from "@/components/ui/slider";
 
 const ASPECT_RATIOS = [
   { name: "Square (1:1)", width: 1024, height: 1024 },
@@ -40,7 +29,7 @@ const loadSavedOptions = () => {
 
 // Save options to localStorage
 const saveOptions = (options) => {
-  console.log(options)
+  console.log(options);
   localStorage.setItem("appOptions", JSON.stringify(options));
 };
 
@@ -75,7 +64,7 @@ export default function Options({ isOpen, setIsOpen, setConfig, config }) {
       aspectRatio: selectedRatio,
       customDimensions,
       config,
-      imageCount
+      imageCount,
     };
     saveOptions(options);
   }
@@ -99,22 +88,15 @@ export default function Options({ isOpen, setIsOpen, setConfig, config }) {
       ...prev,
       imageCount: value,
     }));
-  }
+  };
 
   return (
-    <Collapsible
-      open={isOpen}
-      onOpenChange={setIsOpen}
-      className="w-full space-y-2"
-    >
+    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-full space-y-2">
       <div className="flex items-center justify-between py-2 ">
         <Label className="text-xs font-medium">Advanced Options</Label>
         <CollapsibleTrigger asChild>
           <Button variant="ghost" size="sm" className="w-9 p-0">
-            <ChevronDown
-              className={`h-4 w-4 transition-transform duration-200 ${isOpen ? "transform rotate-180" : ""
-                }`}
-            />
+            <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isOpen ? "transform rotate-180" : ""}`} />
             <span className="sr-only">Toggle</span>
           </Button>
         </CollapsibleTrigger>
@@ -125,36 +107,19 @@ export default function Options({ isOpen, setIsOpen, setConfig, config }) {
             <Label htmlFor="aspect-ratio" className="text-xs">
               Load Image - {imageCount}
             </Label>
-            <Slider
-              defaultValue={[imageCount]}
-              max={100}
-              step={1}
-              onValueCommit={updateOptionsLS}
-              onValueChange={handleSeek}
-            />
+            <Slider defaultValue={[imageCount]} max={100} step={1} onValueCommit={updateOptionsLS} onValueChange={handleSeek} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="aspect-ratio" className="text-xs">
               Aspect Ratio
             </Label>
-            <Select
-              className="text-xs"
-              value={selectedRatio}
-              onValueChange={handleRatioChange}
-            >
+            <Select className="text-xs" value={selectedRatio} onValueChange={handleRatioChange}>
               <SelectTrigger>
-                <SelectValue
-                  placeholder="Select aspect ratio"
-                  className="text-xs"
-                />
+                <SelectValue placeholder="Select aspect ratio" className="text-xs" />
               </SelectTrigger>
               <SelectContent>
                 {ASPECT_RATIOS.map((ratio) => (
-                  <SelectItem
-                    className="text-xs"
-                    key={ratio.name}
-                    value={ratio.name}
-                  >
+                  <SelectItem className="text-xs" key={ratio.name} value={ratio.name}>
                     {ratio.name}
                   </SelectItem>
                 ))}
@@ -164,23 +129,13 @@ export default function Options({ isOpen, setIsOpen, setConfig, config }) {
 
           <div className="space-y-2">
             <Label className="text-xs">Model</Label>
-            <Select
-              className="text-xs"
-              value={config.model}
-              onValueChange={(value) =>
-                setConfig((prev) => ({ ...prev, model: value }))
-              }
-            >
+            <Select className="text-xs" value={config.model} onValueChange={(value) => setConfig((prev) => ({ ...prev, model: value }))}>
               <SelectTrigger>
                 <SelectValue placeholder="Select model" className="text-xs" />
               </SelectTrigger>
               <SelectContent>
                 {MODEL_OPTIONS.map((model) => (
-                  <SelectItem
-                    className="text-xs"
-                    key={model.value}
-                    value={model.value}
-                  >
+                  <SelectItem className="text-xs" key={model.value} value={model.value}>
                     {model.label}
                   </SelectItem>
                 ))}
@@ -245,16 +200,13 @@ export default function Options({ isOpen, setIsOpen, setConfig, config }) {
             )}
           </div>
 
-         
           <div className="flex flex-wrap gap-4 mt-4">
             <div className="flex items-center space-x-2">
               <Switch
                 className="text-xs scale-75"
                 id="nologo"
                 checked={config.nologo}
-                onCheckedChange={(checked) =>
-                  setConfig((prev) => ({ ...prev, nologo: checked }))
-                }
+                onCheckedChange={(checked) => setConfig((prev) => ({ ...prev, nologo: checked }))}
               />
               <Label className="text-xs" htmlFor="nologo">
                 No Logo
@@ -266,9 +218,7 @@ export default function Options({ isOpen, setIsOpen, setConfig, config }) {
                 id="enhance"
                 className="text-xs scale-75"
                 checked={config.enhance}
-                onCheckedChange={(checked) =>
-                  setConfig((prev) => ({ ...prev, enhance: checked }))
-                }
+                onCheckedChange={(checked) => setConfig((prev) => ({ ...prev, enhance: checked }))}
               />
               <Label htmlFor="enhance" className="text-xs">
                 Enhance Quality
@@ -280,9 +230,7 @@ export default function Options({ isOpen, setIsOpen, setConfig, config }) {
                 id="safe"
                 checked={config.safe}
                 className="text-xs scale-75"
-                onCheckedChange={(checked) =>
-                  setConfig((prev) => ({ ...prev, safe: checked }))
-                }
+                onCheckedChange={(checked) => setConfig((prev) => ({ ...prev, safe: checked }))}
               />
               <Label htmlFor="safe" className="text-xs">
                 Safe Mode
@@ -294,9 +242,7 @@ export default function Options({ isOpen, setIsOpen, setConfig, config }) {
                 id="private"
                 className="text-xs scale-75"
                 checked={config.private}
-                onCheckedChange={(checked) =>
-                  setConfig((prev) => ({ ...prev, private: checked }))
-                }
+                onCheckedChange={(checked) => setConfig((prev) => ({ ...prev, private: checked }))}
               />
               <Label htmlFor="private" className="text-xs">
                 Private Mode

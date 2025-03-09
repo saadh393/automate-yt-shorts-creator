@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ImageGenerationStep } from "./image-generation-step";
+import { ImageGenerationStep } from "./home-page/image-generation-step";
 import { AudioUploadStep } from "./audio-upload-step";
 import { STEPS } from "@/lib/constants";
 import { createImageUrl, generateRandomSeed } from "@/lib/image-utils";
@@ -23,27 +23,27 @@ export default function ImageGenerate() {
           .map(async () => {
             const uniqueSeed = generateRandomSeed();
             const baseParams = { ...params, seed: uniqueSeed };
-            
+
             // Using proxy for image generation
-            const response = await fetch('/api/generate', {
-              method: 'POST',
+            const response = await fetch("/api/generate", {
+              method: "POST",
               headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
               },
               body: JSON.stringify({
                 prompt,
                 ...baseParams,
                 width: params.width || 1024,
-                height: params.height || 1024
-              })
+                height: params.height || 1024,
+              }),
             });
-            
+
             if (!response.ok) {
-              throw new Error('Failed to generate image');
+              throw new Error("Failed to generate image");
             }
-            
+
             const data = await response.json();
-            
+
             return {
               url: data.imageUrl,
               highResUrl: data.highResUrl,
@@ -63,9 +63,7 @@ export default function ImageGenerate() {
 
   const handleImageSelect = (image) => {
     setSelectedImages((prev) =>
-      prev.some((selected) => selected.url === image.url)
-        ? prev.filter((selected) => selected.url !== image.url)
-        : [...prev, image]
+      prev.some((selected) => selected.url === image.url) ? prev.filter((selected) => selected.url !== image.url) : [...prev, image]
     );
   };
 

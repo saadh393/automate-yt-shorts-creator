@@ -1,8 +1,8 @@
-import { Button } from "./button";
-import { Textarea } from "./textarea";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 
-import Options from "./prompt/Options";
+import Options from "@/components/home-page/Options";
 import { useApp } from "@/context/app-provider";
 
 const loadSavedOptions = () => {
@@ -24,8 +24,8 @@ export default function PromptField({ onSubmit }) {
       enhance: true,
       safe: true,
       private: false,
-      imageCount : savedOptions?.imageCount || 4,
-    }
+      imageCount: savedOptions?.imageCount || 4,
+    };
   });
 
   const [isOpen, setIsOpen] = useState(false);
@@ -38,25 +38,12 @@ export default function PromptField({ onSubmit }) {
 
   return (
     <div className="px-4">
-      <h2 className="text-sm font-medium tracking-tight my-2">
-        Write your Prompt
-      </h2>
+      <h2 className="text-sm font-medium tracking-tight my-2">Write your Prompt</h2>
 
       <div className="my-4">
-        <Textarea
-          placeholder="Type your prompt here."
-          rows={4}
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-        />
+        <Textarea placeholder="Type your prompt here." rows={4} value={prompt} onChange={(e) => setPrompt(e.target.value)} />
 
-        {/* Options */}
-        <Options
-          isOpen={isOpen}
-          setIsOpen={setIsOpen}
-          setConfig={setConfig}
-          config={config}
-        />
+        <Options isOpen={isOpen} setIsOpen={setIsOpen} setConfig={setConfig} config={config} />
       </div>
       <Button className="mx-auto my-4 block" onClick={handleSubmit}>
         Generate Image

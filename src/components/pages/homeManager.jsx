@@ -1,12 +1,9 @@
 import { useApp } from "@/context/app-provider";
-import PartitionManager from "../ui/partition-manager";
-import { ImageGenerationStep } from "../image-generation-step";
-import SelectedImages from "../ui/images/selected-images";
-import { ROUTES } from "@/lib/constants";
-import ImageGenerate from "../image-generate";
-import AudioManager from "../ui/audio/audio-manager";
-import PromptField from "../ui/prompt-field";
 import { useEffect } from "react";
+import PromptField from "@/components/home-page/prompt-field";
+import { ImageGenerationStep } from "@/components/home-page/image-generation-step";
+import AudioManager from "@/components/ui/audio/audio-manager";
+import SelectedImages from "@/components/ui/images/selected-images";
 
 export default function HomeManager() {
   const { selectedImages, setSelectedImages } = useApp();
@@ -16,10 +13,8 @@ export default function HomeManager() {
     const handlePaste = (e) => {
       if (e.ctrlKey && e.key === "v") {
         navigator.clipboard.readText().then((text) => {
-          console.log(text)
-          // const urls = text.split("\n");
-          // const images = urls.map((url) => ({ url }));
-          setSelectedImages({images : text});
+          console.log(text);
+          setSelectedImages({ images: text });
         });
       }
     };
@@ -30,8 +25,8 @@ export default function HomeManager() {
     // Remove event listener
     return () => {
       document.removeEventListener("keydown", handlePaste);
-    }
-  }, [selectedImages])
+    };
+  }, [selectedImages]);
 
   return (
     <>
