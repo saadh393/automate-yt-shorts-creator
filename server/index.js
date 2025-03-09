@@ -1,17 +1,17 @@
 import cors from "cors";
 import express from "express";
 import { promises as fs } from "fs";
+import http from "http";
 import multer from "multer";
 import path from "path";
-import http from "http";
 import { Server } from "socket.io";
 
 import { uploadConfig } from "./config.js";
-import { OUTPUT_DIR, PUBLIC_DIR, SERVER_DIR, SUBTITLE_MODEL, UPLOADS_DIR } from "./config/paths.js";
-import uploadController from "./controller/upload.controller.js";
+import { OUTPUT_DIR, UPLOADS_DIR } from "./config/paths.js";
 import queueListController from "./controller/queue-list.js";
 import renderQueueListController, { stopAllRenders } from "./controller/render-queue-list.js";
-import { convertToCaptions, transcribe } from "@remotion/install-whisper-cpp";
+import uploadController from "./controller/upload.controller.js";
+import renderVideo from "./piplines/render-video/index.js";
 
 const app = express();
 const port = 9000;
@@ -43,42 +43,18 @@ const storage = multer.diskStorage({
     }
   },
   filename: function (req, file, cb) {
-    // Check if this is a multiple audio upload request
-    const isMultipleAudio = req.headers["x-upload-type"] === "multiple";
+    // For single audio mode, keep original name with short random suffix
+    const ext = path.extname(file.originalname);
+    const imageExt = [".jpg", ".jpeg", ".png", ".gif", ".webp"];
+    const isImage = imageExt.includes(ext);
 
-    if (isMultipleAudio) {
-      // For multiple audio mode, match image and audio names
-      // Initialize the counters if they don't exist
-      req.imageCount = req.imageCount || 0;
-      req.audioCount = req.audioCount || 0;
-
-      const ext = path.extname(file.originalname);
-      const shortRandomSuffix = Math.floor(Math.random() * 10000);
-
-      if (file.fieldname === "images") {
-        const filename = `file-${req.imageCount}${ext}`;
-        req.imageCount++;
-        cb(null, filename);
-      } else {
-        // For audio, use audioCount to ensure unique names
-        const filename = `file-${req.audioCount}${ext}`;
-        req.audioCount++;
-        cb(null, filename);
-      }
+    const nameWithoutExt = path.basename(file.originalname, ext);
+    const shortRandomSuffix = Math.floor(Math.random() * 10000);
+    req.audioFileName = nameWithoutExt;
+    if (isImage) {
+      cb(null, `${nameWithoutExt}-${shortRandomSuffix}${ext}`);
     } else {
-      // For single audio mode, keep original name with short random suffix
-      const ext = path.extname(file.originalname);
-      const imageExt = [".jpg", ".jpeg", ".png", ".gif", ".webp"];
-      const isImage = imageExt.includes(ext);
-
-      const nameWithoutExt = path.basename(file.originalname, ext);
-      const shortRandomSuffix = Math.floor(Math.random() * 10000);
-      req.audioFileName = nameWithoutExt;
-      if (isImage) {
-        cb(null, `${nameWithoutExt}-${shortRandomSuffix}${ext}`);
-      } else {
-        cb(null, `${nameWithoutExt}${ext}`);
-      }
+      cb(null, `${nameWithoutExt}${ext}`);
     }
   },
 });
@@ -101,6 +77,18 @@ app.post("/api/stop-rendering", (req, res) => {
   const result = stopAllRenders();
   res.json(result);
 });
+
+let str = `{
+  "data": {
+    "images": [
+      "image-0-1744.png",
+      "image-1-9402.png"
+    ],
+    "audio": "speech_saad.wav",
+    "duration": 5283.265
+  }
+}`;
+renderVideo(JSON.parse(str));
 
 // const { transcription } = await transcribe({
 //   model: "small",

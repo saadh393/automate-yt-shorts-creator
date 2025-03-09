@@ -1,4 +1,4 @@
-import renderVideo from "../util/renderVideo.js";
+// import renderVideo from "../util/renderVideo.js";
 import writeDataJson from "../util/writeDataJson.js";
 import fs from "fs/promises";
 
@@ -27,7 +27,7 @@ export default async function uploadController(req, res) {
     // Only render video if it's not a queue upload
     let videoUrl = null;
     if (!isQueueUpload) {
-      await renderVideo(dataPath, isMultipleAudio, uploadId);
+      // await renderVideo(dataPath, isMultipleAudio, uploadId);
 
       // Delete the data.json after rendering
       await fs.unlink(dataPath);
@@ -49,9 +49,7 @@ export default async function uploadController(req, res) {
     res.json({
       success: true,
       videoUrl,
-      message: isQueueUpload
-        ? "Files queued successfully"
-        : "Video rendered successfully",
+      message: isQueueUpload ? "Files queued successfully" : "Video rendered successfully",
     });
   } catch (error) {
     console.error("Error processing upload:", error);

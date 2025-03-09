@@ -8,3 +8,5 @@ Sidebar Menu
 ---
 
 1. After Render, delete the data.json and uploads
+
+Render Pipeline
