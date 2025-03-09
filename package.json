@@ -34,6 +34,7 @@
     "@radix-ui/react-tooltip": "^1.1.7",
     "@remotion/bundler": "^4.0.260",
     "@remotion/cli": "^4.0.260",
+    "@remotion/install-whisper-cpp": "4.0.260",
     "@remotion/media-utils": "^4.0.260",
     "@remotion/player": "^4.0.260",
     "@remotion/renderer": "^4.0.260",

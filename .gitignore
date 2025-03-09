@@ -1,6 +1,7 @@
 /public/output/*
 /public/uploads/*
 /out/*
+server/subtitle/whisper.cpp
 /data/*
 
 # Logs

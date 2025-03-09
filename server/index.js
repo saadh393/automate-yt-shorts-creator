@@ -7,10 +7,11 @@ import http from "http";
 import { Server } from "socket.io";
 
 import { uploadConfig } from "./config.js";
-import { OUTPUT_DIR, UPLOADS_DIR } from "./config/paths.js";
+import { OUTPUT_DIR, PUBLIC_DIR, SERVER_DIR, SUBTITLE_MODEL, UPLOADS_DIR } from "./config/paths.js";
 import uploadController from "./controller/upload.controller.js";
 import queueListController from "./controller/queue-list.js";
 import renderQueueListController, { stopAllRenders } from "./controller/render-queue-list.js";
+import { convertToCaptions, transcribe } from "@remotion/install-whisper-cpp";
 
 const app = express();
 const port = 9000;
@@ -19,8 +20,8 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: "*",
-    methods: ["GET", "POST"]
-  }
+    methods: ["GET", "POST"],
+  },
 });
 
 // Make socket.io instance globally available
@@ -73,9 +74,9 @@ const storage = multer.diskStorage({
       const nameWithoutExt = path.basename(file.originalname, ext);
       const shortRandomSuffix = Math.floor(Math.random() * 10000);
       req.audioFileName = nameWithoutExt;
-      if(isImage){
+      if (isImage) {
         cb(null, `${nameWithoutExt}-${shortRandomSuffix}${ext}`);
-      }else{
+      } else {
         cb(null, `${nameWithoutExt}${ext}`);
       }
     }
@@ -100,6 +101,28 @@ app.post("/api/stop-rendering", (req, res) => {
   const result = stopAllRenders();
   res.json(result);
 });
+
+// const { transcription } = await transcribe({
+//   model: "small",
+//   whisperPath: "/home/saad/Programming/temp-project/remotion-scratch/server/subtitle/whisper.cpp",
+//   whisperCppVersion: "1.5.5",
+//   inputPath: path.join(SERVER_DIR, "public", "output.wav"),
+//   tokenLevelTimestamps: true,
+// });
+
+// for (const token of transcription) {
+//   console.log(token.timestamps.from, token.timestamps.to, token.text);
+// }
+
+// // Optional: Apply our recommended postprocessing
+// const { captions } = convertToCaptions({
+//   transcription,
+//   combineTokensWithinMilliseconds: 200,
+// });
+
+// for (const line of captions) {
+//   console.log(line.text, line.startInSeconds);
+// }
 
 // Serve static files
 app.use("/uploads", express.static(UPLOADS_DIR));
