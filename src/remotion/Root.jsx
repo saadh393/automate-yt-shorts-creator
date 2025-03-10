@@ -3,12 +3,14 @@ import { getAudioDurationInSeconds } from "@remotion/media-utils";
 import { calculateMetadata, MultiAudioComposition } from "./compositions/MultiAudioComposition";
 import AudioComposition from "./compositions/AudioComposition";
 import { calculateSingleCompositionMetadata, SingleAudioComposition } from "./compositions/SingleAudioComposition";
+import { caption } from "./data/caption";
 
 export const RemotionRoot = () => {
   const data = {
-    images: ["public/image-0-1744.png", "image-1-9402.png"],
+    images: ["image-0-1744.png", "image-1-9402.png"],
     audio: "speech_saad.wav",
     duration: 5283.265,
+    caption,
   };
 
   const data2 = [
@@ -37,8 +39,6 @@ export const RemotionRoot = () => {
   } else {
     duration = data.duration;
   }
-
-  console.log("duration");
 
   return (
     <>

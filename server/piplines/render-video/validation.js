@@ -9,7 +9,7 @@ import { PUBLIC_DIR, UPLOADS_DIR } from "../../config/paths.js";
  * @param {string} jsonObject.data.audio - The path to the audio file
  * @param {number} jsonObject.data.duration - The duration of the video in ms
  */
-export default async function createTempFile(jsonObject, temp_folder) {
+export default async function Validation(jsonObject, temp_folder) {
   const audio = jsonObject.data.audio;
   const images = jsonObject.data.images;
 

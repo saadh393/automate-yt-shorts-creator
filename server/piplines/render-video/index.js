@@ -1,8 +1,8 @@
-import path from "path";
-import createTempFile from "./create-temp.js";
+import { UPLOADS_DIR } from "../../config/paths.js";
+import formating_output from "./formating-output.js";
 import ffmpegAudioConverter from "./ffmpeg-convert.js";
-import { PUBLIC_DIR } from "../../config/paths.js";
 import generate_subtitle from "./generate-subtitle.js";
+import process_video from "./process-video.js";
 
 /**
  * An array of caption objects generated from the audio.
@@ -26,23 +26,18 @@ import generate_subtitle from "./generate-subtitle.js";
  */
 
 async function renderVideo(jsonObject) {
-  const temp_folder = path.join(PUBLIC_DIR, "temp");
-
-  await createTempFile(jsonObject, temp_folder);
-
   // Convert audio to 16 bit using ffmpeg
-  const convertedAudioPath = await ffmpegAudioConverter(jsonObject, temp_folder);
+  const convertedAudioPath = await ffmpegAudioConverter(jsonObject, UPLOADS_DIR);
 
   /** @type Caption */
   const captionArray = await generate_subtitle(convertedAudioPath);
+  jsonObject.data.caption = captionArray;
+
+  // Render Video
+  const { outputPath } = await process_video(jsonObject);
+
+  // Folderize all the files
+  await formating_output(jsonObject, outputPath);
 }
 
 export default renderVideo;
-
-// Workflow
-// - Move Audio and Images to /public/temp directory
-// - convert the audio using ffmpeg to 16 bit output
-// - Generate Subtitle from Audio
-// - Convert the subtitle to remotion friendly srt
-// - Pass it to remotion and wait for render complete
-// - Clean up temp files and data.json
