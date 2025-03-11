@@ -13,6 +13,7 @@ export default function UploadButton() {
     selectedImages,
     setRenderedVideo,
     generateUploadId,
+    queueRendering,
   } = useApp();
 
   const handleUpload = async (isQueueUpload = false) => {
@@ -92,7 +93,7 @@ export default function UploadButton() {
           "Upload Audio and Generate Video"
         )}
       </Button>
-      <Button variant="outline" onClick={() => handleUpload(true)} disabled={uploading || selectedImages.length === 0}>
+      <Button variant="outline" onClick={queueRendering}>
         Queue New Upload
       </Button>
     </div>

@@ -3,6 +3,8 @@ import { ROUTES, STATE } from "@/lib/constants";
 import prepareApiCall from "@/lib/prepare-api-call";
 import { createContext } from "react";
 import { useContext } from "react";
+import { toast } from "sonner";
+import uploadQueueFiles from "@/api/upload-queue-files";
 
 const AppContext = createContext();
 
@@ -17,7 +19,33 @@ const saveState = (state) => {
   localStorage.setItem("appState", JSON.stringify(state));
 };
 
+/** @type {Config} defaultConfig */
+const defaultConfig = {
+  audio: "generate",
+};
+
+/**
+ *
+ * @returns {Config} savedState
+ */
+const loadAppConfig = () => {
+  const savedState = localStorage.getItem("config");
+  return savedState ? JSON.parse(savedState) : defaultConfig;
+};
+
+const saveAppConfig = (state) => {
+  localStorage.setItem("config", JSON.stringify(state));
+};
+
 export default function AppProvider({ children }) {
+  /**
+   * @type {[Config, React.Dispatch<React.SetStateAction<Config>>]}
+   */
+  const [config, setConfig] = useState(() => {
+    const saved = loadAppConfig();
+    return saved;
+  });
+
   // Initialize all persisted state using lazy initialization
   const [state, setState] = useState(() => {
     const saved = loadSavedState();
@@ -39,6 +67,7 @@ export default function AppProvider({ children }) {
   const [images, setImages] = useState([]);
   const [selectedImages, setSelectedImages] = useState([]);
   const [audioFile, setAudioFile] = useState(null);
+  const [audioText, setAudioText] = useState(null);
   const [multipleAudioFiles, setMultipleAudioFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -49,11 +78,7 @@ export default function AppProvider({ children }) {
 
   const generateUploadId = () => {
     let dateTime = new Date().toLocaleString();
-    dateTime = dateTime
-      .replace(/:/g, "-")
-      .replace(/\//g, "-")
-      .replace(/ /g, "-")
-      .replace(/\,/g, "_");
+    dateTime = dateTime.replace(/:/g, "-").replace(/\//g, "-").replace(/ /g, "-").replace(/\,/g, "_");
     const generatedId = prompt.replace(/\s/g, "-") + "_" + dateTime;
     setUploadId(generatedId);
     return generatedId;
@@ -68,6 +93,10 @@ export default function AppProvider({ children }) {
     };
     saveState(stateToSave);
   }, [state, route, isMultipleAudio]);
+
+  useEffect(() => {
+    saveAppConfig(config);
+  }, [config]);
 
   const handleGenerateImage = async ({ prompt, ...params }) => {
     setState(STATE.GENERATING);
@@ -91,8 +120,62 @@ export default function AppProvider({ children }) {
         return [...prev, image];
       }
     });
+  }
 
-    console.log(selectedImages);
+  async function queueRendering() {
+    setUploading(true);
+    setRenderedVideo(null);
+
+    const formData = new FormData();
+
+    if (!selectedImages.length) {
+      setUploading(false);
+      return toast.error("Select Atleast one image file");
+    }
+
+    const audioContent = config.audio == "generate" ? audioText : audioFile;
+    console.log(audioContent, config.audio == "generate");
+    if (!audioContent) {
+      setUploading(false);
+      return toast.error("Audio is not provided Properly");
+    }
+
+    // Convert all images to blobs and wait for them to complete
+    const imagePromises = selectedImages.map(async (image, index) => {
+      const response = await fetch(image.url);
+      const blob = await response.blob();
+      return { blob, index };
+    });
+
+    // Add images to formData
+    const imageBlobs = await Promise.all(imagePromises);
+    imageBlobs.forEach(({ blob, index }) => {
+      formData.append("images", blob, `image-${index}.png`);
+    });
+
+    formData.append("audioType", config.audio);
+    formData.append("audio", audioContent);
+    formData.append("isQueueUpload", true);
+    formData.append("uploadId", uploadId);
+
+    uploadQueueFiles(formData)
+      .then(() => {
+        setSelectedImages([]);
+        setAudioFile(null);
+        setAudioText(null);
+        setPrompt(null);
+        setImages(null);
+        setError(null);
+        setUploadId(null);
+        toast.success("Queued Successfully");
+      })
+      .catch((e) => {
+        console.error(e);
+        toast.error("There is an error, check console for stacktrace");
+      })
+      .finally(() => {
+        setUploading(false);
+      });
   }
 
   return (
@@ -123,6 +206,13 @@ export default function AppProvider({ children }) {
         setGenerating,
         uploadId,
         generateUploadId,
+        config,
+        setConfig,
+        audioText,
+        setAudioText,
+        queueRendering,
+        setUploadId,
+        uploadId,
       }}
     >
       {children}
@@ -130,21 +220,6 @@ export default function AppProvider({ children }) {
   );
 }
 
-/**
- * @typedef {Object} AppContextValue
- * @property {import('@/lib/constants').STATE} state - Current application state (IDLE, GENERATING, SUCCESS, FAILURE)
- * @property {Error|null} error - Error object if any error occurs during generation
- * @property {Array<Object>} images - Array of generated images
- * @property {boolean} generating - Flag indicating if image generation is in progress
- * @property {Array<Object>} selectedImages - Array of currently selected images
- * @property {(params: {prompt: string, [key: string]: any}) => Promise<void>} handleGenerateImage - Function to generate images based on prompt and additional parameters
- */
-
-/**
- * Hook to access the App context values
- * @returns {AppContextValue} The current app context value
- * @throws {Error} If used outside of AppProvider
- */
 export function useApp() {
   return useContext(AppContext);
 }

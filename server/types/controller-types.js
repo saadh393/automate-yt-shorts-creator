@@ -12,6 +12,9 @@
  * @property {string} audio - Audio File Name with Extension
  * @property {number} duration - Duration in miliseconds
  * @property {Caption[]} [caption] - Array of Captions
+ * @property {string} audioType - Audio Type could be - generate or upload
+ * @property {string} audioPrompt - String that needed to generate
+ * @property {string} uploadId - String that needed to generate
  */
 
 /**

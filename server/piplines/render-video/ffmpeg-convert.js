@@ -12,21 +12,21 @@ export default async function ffmpegAudioConverter(jsonObject, temp_folder) {
 
   console.log(audio);
   return new Promise((resolve, reject) => {
-    updateProgress(jsonObject.data.audio, StatusType.FFMPEG, "⛏️ Preparing FFMPEG...");
+    updateProgress(jsonObject.data.uploadId, StatusType.FFMPEG, "⛏️ Preparing FFMPEG...");
 
     ffmpeg(audio)
       .audioFrequency(AUDIO_FREQUENCY)
       .audioChannels(1)
       .audioCodec(AUDIO_CODEC)
       .on("end", () => {
-        updateProgress(jsonObject.data.audio, StatusType.FFMPEG, "Audio Converted Successfully");
+        updateProgress(jsonObject.data.uploadId, StatusType.FFMPEG, "Audio Converted Successfully");
         resolve(outputPath);
       })
       .on("progress", function (progress) {
-        updateProgress(jsonObject.data.audio, StatusType.FFMPEG, "Audio Converting to 16bit");
+        updateProgress(jsonObject.data.uploadId, StatusType.FFMPEG, "Audio Converting to 16bit");
       })
       .on("error", (err) => {
-        updateProgress(jsonObject.data.audio, StatusType.ERROR, `Error from FFMPEG : ${err}`);
+        updateProgress(jsonObject.data.uploadId, StatusType.ERROR, `Error from FFMPEG : ${err}`);
         console.error("Error converting audio:", err);
         reject(err);
       })

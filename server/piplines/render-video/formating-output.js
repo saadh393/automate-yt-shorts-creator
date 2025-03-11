@@ -15,7 +15,7 @@ export default async function formating_output(jsonObject, outputPath) {
   const images = jsonObject.data.images;
   const audioExt = path.extname(audio);
   const genericName = audio.split(audioExt)[0];
-  updateProgress(jsonObject.data.audio, StatusType.REMOVE_TEMP, "Removing Temporary Files");
+  updateProgress(jsonObject.data.uploadId, StatusType.REMOVE_TEMP, "Removing Temporary Files");
 
   try {
     // Make Directory to Output Folder
@@ -47,7 +47,7 @@ export default async function formating_output(jsonObject, outputPath) {
     const dataFilePath = path.join(DATA_DIR, `data-${genericName}.json`);
     await fs.rm(dataFilePath);
   } catch (error) {
-    updateProgress(jsonObject.data.audio, StatusType.ERROR, JSON.stringify(error));
+    updateProgress(jsonObject.data.uploadId, StatusType.ERROR, JSON.stringify(error));
     console.error(error);
   }
 }

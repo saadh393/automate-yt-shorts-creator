@@ -51,6 +51,8 @@ export function useSocket() {
         ...prev, // spread existing state
         [data.id]: data, // update the specific id
       }));
+
+      console.log(renderStatus);
     });
 
     socket.on("render", (data) => {

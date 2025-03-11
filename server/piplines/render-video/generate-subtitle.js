@@ -15,7 +15,7 @@ const MODEL_VERSION = "1.5.5";
  */
 export default async function generate_subtitle(convertedAudioPath, jsonObject) {
   try {
-    updateProgress(jsonObject.data.audio, StatusType.SUBTITLE, "Transcribing the audio file");
+    updateProgress(jsonObject.data.uploadId, StatusType.SUBTITLE, "Transcribing the audio file");
 
     const whisperCppOutput = await transcribe({
       model: MODEL_NAME,
@@ -30,7 +30,7 @@ export default async function generate_subtitle(convertedAudioPath, jsonObject) 
     /** @type {Caption} caption */
     return captions;
   } catch (e) {
-    updateProgress(jsonObject.data.audio, StatusType.ERROR, "Transcribing ERROR : " + e);
+    updateProgress(jsonObject.data.uploadId, StatusType.ERROR, "Transcribing ERROR : " + e);
     throw new Error(e);
   }
 }

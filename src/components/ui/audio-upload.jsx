@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { Button } from "./button";
 import { cn } from "@/lib/utils";
 
-export function AudioUpload({ onAudioSelect }) {
+export function AudioUpload({ onAudioSelect, setUploadId }) {
   const [isDragging, setIsDragging] = useState(false);
   const [audioFile, setAudioFile] = useState(null);
   const fileInputRef = useRef(null);
@@ -28,6 +28,9 @@ export function AudioUpload({ onAudioSelect }) {
   const handleFileSelect = (file) => {
     setAudioFile(file);
     onAudioSelect(file);
+
+    const name = file.name.split(".")[0];
+    setUploadId(name);
   };
 
   const handleFileInput = (e) => {

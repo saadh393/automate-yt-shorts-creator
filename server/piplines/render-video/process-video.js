@@ -19,7 +19,7 @@ export default async function process_video(jsonObject) {
   const OUTPUT_FILE_NAME = jsonObject.data.audio.split(".")[0];
   const OUTPUT_FILE_PATH = getOutputVideoPath(OUTPUT_FILE_NAME);
 
-  updateProgress(jsonObject.data.audio, StatusType.RENDER, "Preparing for render...");
+  updateProgress(jsonObject.data.uploadId, StatusType.RENDER, "Preparing for render...");
 
   // Configuring Remotion
   const bundled = await bundle(REMOTION_INDEX_FILE);
@@ -38,7 +38,7 @@ export default async function process_video(jsonObject) {
     inputProps: jsonObject,
     onProgress: ({ progress }) => {
       const progressInPercentage = Math.floor(progress * 100);
-      updateProgress(jsonObject.data.audio, StatusType.PROGRESS, progressInPercentage);
+      updateProgress(jsonObject.data.uploadId, StatusType.PROGRESS, progressInPercentage);
     },
   });
 

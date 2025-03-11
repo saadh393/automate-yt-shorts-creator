@@ -14,7 +14,7 @@ export const ImageGenerationStep = () => {
     );
   }
 
-  if (!generating && images.length === 0) {
+  if (!generating && images?.length === 0) {
     return null;
   }
 
@@ -24,7 +24,7 @@ export const ImageGenerationStep = () => {
         <h3 className="text-xl font-semibold text-muted-foreground">Generated Images</h3>
       </div>
 
-      {images.length > 0 && <ImageGrid title="Generated Images" images={images} selectedImages={selectedImages} />}
+      {images?.length > 0 && <ImageGrid title="Generated Images" images={images} selectedImages={selectedImages} />}
     </>
   );
 };

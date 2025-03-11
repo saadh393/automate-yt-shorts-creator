@@ -4,7 +4,9 @@ import fs from "fs/promises";
 
 export default async function uploadController(req, res) {
   try {
-    const uploadId = req.audioFileName;
+    const uploadId = req.body.uploadId;
+    const audioType = req.body.audioType;
+    const audioPrompt = req.body?.audio || null;
 
     if (!uploadId) {
       throw new Error("Upload ID is required");
@@ -17,12 +19,12 @@ export default async function uploadController(req, res) {
       return res.status(400).json({ error: "No images were uploaded." });
     }
 
-    if (!req.files.audio) {
+    if (audioType !== "generate" && !req.files.audio) {
       return res.status(400).json({ error: "No audio files were uploaded." });
     }
 
     // Write data.json with the files information
-    const dataPath = await writeDataJson(req.files, isMultipleAudio, uploadId);
+    const dataPath = await writeDataJson(req.files, isMultipleAudio, uploadId, audioType, audioPrompt);
 
     // Only render video if it's not a queue upload
     let videoUrl = null;

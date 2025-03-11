@@ -43,6 +43,7 @@ const storage = multer.diskStorage({
     }
   },
   filename: function (req, file, cb) {
+    console.log(file);
     // For single audio mode, keep original name with short random suffix
     const ext = path.extname(file.originalname);
     const imageExt = [".jpg", ".jpeg", ".png", ".gif", ".webp"];
@@ -50,7 +51,6 @@ const storage = multer.diskStorage({
 
     const nameWithoutExt = path.basename(file.originalname, ext);
     const shortRandomSuffix = Math.floor(Math.random() * 10000);
-    req.audioFileName = nameWithoutExt;
     if (isImage) {
       cb(null, `${nameWithoutExt}-${shortRandomSuffix}${ext}`);
     } else {
