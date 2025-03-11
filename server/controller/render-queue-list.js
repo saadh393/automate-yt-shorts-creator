@@ -12,6 +12,8 @@ export default async function renderQueueListController(req, res) {
   /** @type {DataContent[]}  */
   const data = await getDataToRender(DATA_DIR);
 
+  console.log(data);
+
   // Process videos sequentially using for...of loop instead of map
   for (const [index, jsonObject] of data.entries()) {
     try {

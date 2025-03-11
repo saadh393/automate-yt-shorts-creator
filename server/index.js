@@ -11,6 +11,7 @@ import { OUTPUT_DIR, UPLOADS_DIR } from "./config/paths.js";
 import queueListController from "./controller/queue-list.js";
 import renderQueueListController from "./controller/render-queue-list.js";
 import uploadController from "./controller/upload.controller.js";
+import ClearCache from "./controller/clearCacheController.js";
 
 const app = express();
 const port = 9000;
@@ -71,6 +72,8 @@ app.post("/api/upload", upload.fields(uploadConfig), uploadController);
 app.get("/api/queue_list", queueListController);
 
 app.get("/api/render-queue-list", renderQueueListController);
+
+app.get("/api/clear-cache", ClearCache);
 
 // let str = `{
 //   "data": {

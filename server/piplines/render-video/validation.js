@@ -8,13 +8,15 @@ import updateProgress, { StatusType } from "../../util/socket-update-progress.js
 export default async function Validation(jsonObject, UPLOADS_DIR) {
   const audio = jsonObject.data.audio;
   const images = jsonObject.data.images;
-  updateProgress(jsonObject.data.audio, StatusType.VALIDATION);
+  updateProgress(jsonObject.data.audio, StatusType.VALIDATION, "Validating the resources");
 
   // Check if `temp` folder exists or not
   try {
     await fs.access(UPLOADS_DIR);
   } catch {
-    throw new Error(`${UPLOADS_DIR} directory not found`);
+    const errorMessage = `${UPLOADS_DIR} directory not found`;
+    updateProgress(jsonObject.data.audio, StatusType.ERROR, errorMessage);
+    throw new Error(errorMessage);
   }
 
   // Move the Audio
@@ -22,7 +24,9 @@ export default async function Validation(jsonObject, UPLOADS_DIR) {
   try {
     await fs.access(audioFilePath); // checks if file exists
   } catch {
-    throw new Error(`Audio Not Found at : ${audioFilePath}`);
+    const errorMessage = `Audio Not Found at : ${audioFilePath}`;
+    updateProgress(jsonObject.data.audio, StatusType.ERROR, errorMessage);
+    throw new Error(errorMessage);
   }
 
   // Move the Images
@@ -32,7 +36,9 @@ export default async function Validation(jsonObject, UPLOADS_DIR) {
     try {
       await fs.access(imageFilePath);
     } catch {
-      throw new Error(`Image Not Found at : ${imageFilePath}`);
+      const errorMessage = `Image Not Found at : ${imageFilePath}`;
+      updateProgress(jsonObject.data.audio, StatusType.ERROR, errorMessage);
+      throw new Error(errorMessage);
     }
   }
 }

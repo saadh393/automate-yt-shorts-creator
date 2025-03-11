@@ -17,33 +17,37 @@ export default async function formating_output(jsonObject, outputPath) {
   const genericName = audio.split(audioExt)[0];
   updateProgress(jsonObject.data.audio, StatusType.REMOVE_TEMP, "Removing Temporary Files");
 
-  // Make Directory to Output Folder
-  const outputFolder = path.join(OUTPUT_DIR, genericName);
-  await fs.mkdir(outputFolder);
+  try {
+    // Make Directory to Output Folder
+    const outputFolder = path.join(OUTPUT_DIR, genericName);
+    await fs.mkdir(outputFolder);
 
-  // Move the Audio
-  const audioFilePath = path.join(UPLOADS_DIR, audio);
-  await fs.rename(audioFilePath, path.join(outputFolder, audio));
+    // Move the Audio
+    const audioFilePath = path.join(UPLOADS_DIR, audio);
+    await fs.rename(audioFilePath, path.join(outputFolder, audio));
 
-  // Move the Vide Output
-  const ext = path.extname(outputPath);
-  await fs.rename(outputPath, path.join(outputFolder, genericName + ext));
+    // Move the Vide Output
+    const ext = path.extname(outputPath);
+    await fs.rename(outputPath, path.join(outputFolder, genericName + ext));
 
-  // Move the Images
-  for await (let image of images) {
-    const imageFilePath = path.join(UPLOADS_DIR, image);
-    const ext = path.extname(image);
-    const random = Math.random().toString(36).substring(7);
-    const newFileName = `${genericName}-${random}${ext}`;
-    await fs.rename(imageFilePath, path.join(outputFolder, newFileName));
+    // Move the Images
+    for await (let image of images) {
+      const imageFilePath = path.join(UPLOADS_DIR, image);
+      const ext = path.extname(image);
+      const random = Math.random().toString(36).substring(7);
+      const newFileName = `${genericName}-${random}${ext}`;
+      await fs.rename(imageFilePath, path.join(outputFolder, newFileName));
+    }
+
+    // Delete ffmpeg 16bit audio file
+    const deleteFilePath = path.join(UPLOADS_DIR, "output_" + genericName + ".wav");
+    await fs.rm(deleteFilePath);
+
+    // Delete the data/json file
+    const dataFilePath = path.join(DATA_DIR, `data-${genericName}.json`);
+    await fs.rm(dataFilePath);
+  } catch (error) {
+    updateProgress(jsonObject.data.audio, StatusType.ERROR, JSON.stringify(error));
+    console.error(error);
   }
-
-  // Delete ffmpeg 16bit audio file
-  const deleteFilePath = path.join(UPLOADS_DIR, "output_" + audio);
-  await fs.rm(deleteFilePath);
-
-  // Delete the data/json file
-  const dataFilePath = path.join(DATA_DIR, `data-${genericName}.json`);
-  console.log(dataFilePath);
-  await fs.rm(dataFilePath);
 }

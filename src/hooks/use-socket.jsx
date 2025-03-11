@@ -24,6 +24,7 @@ export function useSocket() {
     });
 
     socket.on("disconnect", () => {
+      setIsRender(false);
       setIsConnected(false);
     });
 
@@ -44,10 +45,12 @@ export function useSocket() {
 
     // data - {id, status, message}
     socket.on("render_progress", (data) => {
-      console.log(renderStatus);
-      setRenderStatus((prev) => {
-        return (prev[data.id] = data);
-      });
+      // console.log(renderStatus);
+      // console.log(data);
+      setRenderStatus((prev) => ({
+        ...prev, // spread existing state
+        [data.id]: data, // update the specific id
+      }));
     });
 
     socket.on("render", (data) => {

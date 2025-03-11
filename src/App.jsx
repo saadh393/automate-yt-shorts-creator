@@ -7,6 +7,7 @@ import Home from "@/pages/HomePage";
 import QueuePage from "@/pages/QueuePage";
 import RenderedPage from "@/pages/RenderedPage";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "sonner";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
                 <Route path="/queue" element={<QueuePage />} />
                 <Route path="/rendered" element={<RenderedPage />} />
               </Routes>
+              <Toaster position="bottom-right" />
             </Layout>
           </TooltipProvider>
         </AppProvider>
