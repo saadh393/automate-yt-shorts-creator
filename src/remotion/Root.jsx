@@ -4,6 +4,8 @@ import { calculateMetadata, MultiAudioComposition } from "./compositions/MultiAu
 import AudioComposition from "./compositions/AudioComposition";
 import { calculateSingleCompositionMetadata, SingleAudioComposition } from "./compositions/SingleAudioComposition";
 import { caption } from "./data/caption";
+import { useEffect } from "react";
+import { loadFont } from "./caption/load-font";
 
 export const RemotionRoot = () => {
   const data = {
@@ -39,6 +41,12 @@ export const RemotionRoot = () => {
   } else {
     duration = data.duration;
   }
+
+  useEffect(() => {
+    loadFont().then(() => {
+      console.log("Hello");
+    });
+  }, []);
 
   return (
     <>

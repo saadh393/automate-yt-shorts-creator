@@ -36,6 +36,7 @@
     "@remotion/bundler": "^4.0.260",
     "@remotion/captions": "4.0.273",
     "@remotion/cli": "^4.0.260",
+    "@remotion/fonts": "^4.0.273",
     "@remotion/install-whisper-cpp": "4.0.260",
     "@remotion/layout-utils": "4.0.273",
     "@remotion/media-utils": "^4.0.260",

@@ -1,12 +1,13 @@
-import { useEffect, useState } from 'react';
-import { io } from 'socket.io-client';
+import { useEffect, useState } from "react";
+import { io } from "socket.io-client";
 
 // Create socket instance outside component to prevent multiple connections
-const socket = io('http://localhost:9000');
+const socket = io("http://localhost:9000");
 
 export function useSocket() {
   const [isConnected, setIsConnected] = useState(false);
   const [renderStatus, setRenderStatus] = useState({});
+  const [isRendering, setIsRender] = useState(false);
 
   useEffect(() => {
     // Connect explicitly when component mounts
@@ -14,65 +15,50 @@ export function useSocket() {
       socket.connect();
     }
 
-    if(socket.connected && !isConnected) {
+    if (socket.connected && !isConnected) {
       setIsConnected(true);
     }
 
-    socket.on('connect', () => {
+    socket.on("connect", () => {
       setIsConnected(true);
     });
 
-    socket.on('disconnect', () => {
+    socket.on("disconnect", () => {
       setIsConnected(false);
     });
 
-    socket.on('renderStart', (data) => {
-      setRenderStatus(prev => ({
-        ...prev,
-        [data.uploadId]: { status: 'rendering', progress: 0 }
-      }));
+    /**
+     * @enum {Object}
+     */
+    const StatusType = {
+      STARTED: "started",
+      ERROR: "error",
+      VALIDATION: "validation",
+      FFMPEG: "ffmpeg",
+      SUBTITLE: "subtitle",
+      RENDER: "rendering",
+      PROGRESS: "render_progress",
+      REMOVE_TEMP: "temp",
+      COMPLETE: "complete",
+    };
+
+    // data - {id, status, message}
+    socket.on("render_progress", (data) => {
+      console.log(renderStatus);
+      setRenderStatus((prev) => {
+        return (prev[data.id] = data);
+      });
     });
 
-    socket.on('renderProgress', (data) => {
-
-      setRenderStatus(prev => ({
-        ...prev,
-        [data.uploadId]: { status: 'rendering', progress: data.progress }
-      }));
-    });
-
-    socket.on('renderComplete', (data) => {
-      setRenderStatus(prev => ({
-        ...prev,
-        [data.uploadId]: { status: 'completed', progress: 100, outputPath: data.outputPath }
-      }));
-    });
-
-    socket.on('renderError', (data) => {
-      setRenderStatus(prev => ({
-        ...prev,
-        [data.uploadId]: { status: 'error', error: data.error }
-      }));
-    });
-
-    socket.on('renderAborted', (data) => {
-      const keys= Object.keys(renderStatus);
-      let obj = {}
-      const newStatus = keys.reduce((acc, key) => {
-        return { ...acc, [key]: { status: 'aborted', progress: 0 } };
-      }, obj);
-
-      setRenderStatus(newStatus)
+    socket.on("render", (data) => {
+      setIsRender(data);
     });
 
     return () => {
-      socket.off('connect');
-      socket.off('disconnect');
-      socket.off('renderStart');
-      socket.off('renderProgress');
-      socket.off('renderComplete');
-      socket.off('renderError');
-      socket.off('renderAborted');
+      socket.off("connect");
+      socket.off("disconnect");
+      socket.off("render_progress");
+      socket.off("render");
     };
   }, []);
 
@@ -80,10 +66,11 @@ export function useSocket() {
     socket,
     isConnected,
     renderStatus,
+    isRendering,
     connect: () => {
       if (!socket.connected) {
         socket.connect();
       }
-    }
+    },
   };
 }

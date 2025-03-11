@@ -7,11 +7,10 @@ import path from "path";
 import { Server } from "socket.io";
 
 import { uploadConfig } from "./config.js";
-import { OUTPUT_DIR, PUBLIC_DIR, UPLOADS_DIR } from "./config/paths.js";
+import { OUTPUT_DIR, UPLOADS_DIR } from "./config/paths.js";
 import queueListController from "./controller/queue-list.js";
-import renderQueueListController, { stopAllRenders } from "./controller/render-queue-list.js";
+import renderQueueListController from "./controller/render-queue-list.js";
 import uploadController from "./controller/upload.controller.js";
-import renderVideo from "./piplines/render-video/index.js";
 
 const app = express();
 const port = 9000;
@@ -73,35 +72,30 @@ app.get("/api/queue_list", queueListController);
 
 app.get("/api/render-queue-list", renderQueueListController);
 
-app.post("/api/stop-rendering", (req, res) => {
-  const result = stopAllRenders();
-  res.json(result);
-});
+// let str = `{
+//   "data": {
+//     "images": [
+//       "image-0-1744.png",
+//       "image-1-9402.png"
+//     ],
+//     "audio": "speech_saad.wav",
+//     "duration": 5283.265
+//   }
+// }`;
 
-let str = `{
-  "data": {
-    "images": [
-      "image-0-1744.png",
-      "image-1-9402.png"
-    ],
-    "audio": "speech_saad.wav",
-    "duration": 5283.265
-  }
-}`;
+// await setupTestEnvironment();
 
-await setupTestEnvironment();
+// renderVideo(JSON.parse(str));
 
-renderVideo(JSON.parse(str));
+// async function setupTestEnvironment() {
+//   const test_resource = path.join(PUBLIC_DIR, "test-resource");
+//   const upload_directory = path.join(UPLOADS_DIR);
 
-async function setupTestEnvironment() {
-  const test_resource = path.join(PUBLIC_DIR, "test-resource");
-  const upload_directory = path.join(UPLOADS_DIR);
-
-  const test_files = await fs.readdir(test_resource);
-  for (const file of test_files) {
-    await fs.copyFile(path.join(test_resource, file), path.join(upload_directory, file));
-  }
-}
+//   const test_files = await fs.readdir(test_resource);
+//   for (const file of test_files) {
+//     await fs.copyFile(path.join(test_resource, file), path.join(upload_directory, file));
+//   }
+// }
 
 // const { transcription } = await transcribe({
 //   model: "small",

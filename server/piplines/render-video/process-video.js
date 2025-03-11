@@ -2,6 +2,7 @@ import path from "path";
 import { getOutputVideoPath, OUTPUT_DIR, SRC_DIR } from "../../config/paths.js";
 import { bundle } from "@remotion/bundler";
 import { renderMedia, selectComposition } from "@remotion/renderer";
+import updateProgress, { StatusType } from "../../util/socket-update-progress.js";
 
 const REMOTION_INDEX_FILE = path.join(SRC_DIR, "remotion/index.js");
 const COMPOSITION_INDEX = "single-audio";
@@ -18,6 +19,8 @@ export default async function process_video(jsonObject) {
   const OUTPUT_FILE_NAME = jsonObject.data.audio.split(".")[0];
   const OUTPUT_FILE_PATH = getOutputVideoPath(OUTPUT_FILE_NAME);
 
+  updateProgress(jsonObject.data.audio, StatusType.RENDER, "Preparing for render...");
+
   // Configuring Remotion
   const bundled = await bundle(REMOTION_INDEX_FILE);
   const composition = await selectComposition({
@@ -33,18 +36,13 @@ export default async function process_video(jsonObject) {
     codec: VIDEO_CODEC,
     outputLocation: OUTPUT_FILE_PATH,
     inputProps: jsonObject,
-    onProgress: handleProgress,
+    onProgress: ({ progress }) => {
+      const progressInPercentage = Math.floor(progress * 100);
+      updateProgress(jsonObject.data.audio, StatusType.PROGRESS, progressInPercentage);
+    },
   });
 
   return {
     outputPath: OUTPUT_FILE_PATH,
   };
-}
-
-function handleProgress({ progress }) {
-  const percentage = Math.floor(progress * 100);
-  // global.oi.emit("renderProgress", {
-  //   uploadId: OUTPUT_FILE_NAME,
-  //   outputPath: percentage,
-  // });
 }

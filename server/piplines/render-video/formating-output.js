@@ -1,6 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 import { DATA_DIR, OUTPUT_DIR, UPLOADS_DIR } from "../../config/paths.js";
+import updateProgress, { StatusType } from "../../util/socket-update-progress.js";
 
 /**
  * @param {Object} jsonObject - The object that contains the data for video rendering
@@ -14,6 +15,7 @@ export default async function formating_output(jsonObject, outputPath) {
   const images = jsonObject.data.images;
   const audioExt = path.extname(audio);
   const genericName = audio.split(audioExt)[0];
+  updateProgress(jsonObject.data.audio, StatusType.REMOVE_TEMP, "Removing Temporary Files");
 
   // Make Directory to Output Folder
   const outputFolder = path.join(OUTPUT_DIR, genericName);
@@ -21,7 +23,6 @@ export default async function formating_output(jsonObject, outputPath) {
 
   // Move the Audio
   const audioFilePath = path.join(UPLOADS_DIR, audio);
-  console.log(`Output Audio - ${path.join(outputFolder, audio)}`);
   await fs.rename(audioFilePath, path.join(outputFolder, audio));
 
   // Move the Vide Output
@@ -34,7 +35,6 @@ export default async function formating_output(jsonObject, outputPath) {
     const ext = path.extname(image);
     const random = Math.random().toString(36).substring(7);
     const newFileName = `${genericName}-${random}${ext}`;
-    console.log("Output Image -", path.join(outputFolder, newFileName));
     await fs.rename(imageFilePath, path.join(outputFolder, newFileName));
   }
 
@@ -44,7 +44,6 @@ export default async function formating_output(jsonObject, outputPath) {
 
   // Delete the data/json file
   const dataFilePath = path.join(DATA_DIR, `data-${genericName}.json`);
+  console.log(dataFilePath);
   await fs.rm(dataFilePath);
-
-  console.log("✅ Done");
 }

@@ -1,25 +1,22 @@
-import { convertToCaptions, toCaptions, transcribe } from "@remotion/install-whisper-cpp";
+import { toCaptions, transcribe } from "@remotion/install-whisper-cpp";
 import path from "path";
 import { SERVER_DIR } from "../../config/paths.js";
+import updateProgress, { StatusType } from "../../util/socket-update-progress.js";
 
 const MODEL_NAME = "small";
 const MODEL_PATH = path.join(SERVER_DIR, "subtitle", "whisper.cpp");
 const MODEL_VERSION = "1.5.5";
 
 /**
- * An array of caption objects generated from the audio.
- * Each caption object contains the following properties:
- * @typedef {Object} Caption
- * @property {string} text - The text of the caption.
- * @property {number} startMs - The start time of the caption in milliseconds.
- * @property {number} endMs - The end time of the caption in milliseconds.
- * @property {number} timestampMs - The timestamp of the caption in milliseconds.
- * @property {number} confidence - The confidence score of the caption.
  *
- * @type {Caption[]}
+ * @param {string} convertedAudioPath - Converted autio path - /public/upload/output-filename.wav
+ * @param {DataType} jsonObject
+ * @returns {Caption}
  */
-export default async function generate_subtitle(convertedAudioPath) {
+export default async function generate_subtitle(convertedAudioPath, jsonObject) {
   try {
+    updateProgress(jsonObject.data.audio, StatusType.SUBTITLE, "Transcribing the audio file");
+
     const whisperCppOutput = await transcribe({
       model: MODEL_NAME,
       whisperPath: MODEL_PATH,
@@ -30,9 +27,10 @@ export default async function generate_subtitle(convertedAudioPath) {
 
     const { captions } = toCaptions({ whisperCppOutput });
 
-    /** @type Caption */
+    /** @type {Caption} caption */
     return captions;
   } catch (e) {
+    updateProgress(jsonObject.data.audio, StatusType.ERROR, "Transcribing ERROR : " + e);
     throw new Error(e);
   }
 }

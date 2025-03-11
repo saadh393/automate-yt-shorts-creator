@@ -1,6 +1,6 @@
 import { continueRender, delayRender, staticFile } from "remotion";
 
-export const TheBoldFont = `TheBoldFont`;
+export const KomikaAxis = `TheBoldFont`;
 
 let loaded = false;
 
@@ -13,7 +13,7 @@ export const loadFont = async () => {
 
   loaded = true;
 
-  const font = new FontFace(TheBoldFont, `url('${staticFile("theboldfont.ttf")}') format('truetype')`);
+  const font = new FontFace(KomikaAxis, `url('${staticFile("/KOMIKAX_.ttf")}')`);
 
   await font.load();
   document.fonts.add(font);

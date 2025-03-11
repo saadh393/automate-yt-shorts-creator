@@ -7,10 +7,30 @@ import { useSocket } from "@/hooks/use-socket";
 import { Loader, X } from "lucide-react";
 import stopRendering from "@/api/stopRendering";
 
+const StatusType = {
+  STARTED: "started",
+  ERROR: "error",
+  VALIDATION: "validation",
+  FFMPEG: "ffmpeg",
+  SUBTITLE: "subtitle",
+  RENDER: "rendering",
+  PROGRESS: "render_progress",
+  REMOVE_TEMP: "temp",
+  COMPLETE: "complete",
+};
+const restofTheStatus = [
+  StatusType.STARTED,
+  StatusType.VALIDATION,
+  StatusType.FFMPEG,
+  StatusType.SUBTITLE,
+  StatusType.RENDER,
+  StatusType.REMOVE_TEMP,
+];
+
 export default function QueuePageManager() {
   const [queueList, setQueueList] = useState([]);
   const [isStoppingRender, setIsStoppingRender] = useState(false);
-  const { isConnected, renderStatus, connect } = useSocket();
+  const { isConnected, renderStatus, connect, isRendering } = useSocket();
 
   async function refreshPage() {
     try {
@@ -21,7 +41,9 @@ export default function QueuePageManager() {
 
           // Uppercase first letter
           let utitle = title.charAt(0).toUpperCase() + title.slice(1);
-          return { fileName: d, title: utitle, id: title };
+          const id = title.replace(/\s+/g, "_");
+          console.log(id);
+          return { fileName: d, title: utitle, id };
         })
       );
     } catch (error) {}
@@ -47,9 +69,6 @@ export default function QueuePageManager() {
       setIsStoppingRender(false);
     }
   }
-
-  const renderArr = Object.values(renderStatus);
-  const isRendering = renderArr.length == 0 ? false : renderArr.every((status) => status.status === "rendering");
 
   return (
     <>
@@ -78,15 +97,6 @@ export default function QueuePageManager() {
           {isRendering && <Loader className="animate-spin h-4 w-4 " />}
           {isRendering ? "Rendering..." : "Start Rendering"}
         </Button>
-
-        {/* {isRendering && <Button
-          onClick={handleStopRendering}
-          className="text-right flex gap-2 items-center justify-center"
-          variant="destructive"
-        >
-          <X className="h-4 w-4 " />
-          Stop
-        </Button>} */}
       </div>
       <ul className="mt-2 space-y-2 divide-y ">
         {queueList.map((item) => (
@@ -98,23 +108,29 @@ export default function QueuePageManager() {
 
             {renderStatus[item.id] && (
               <div className="mt-2">
-                {renderStatus[item.id].status === "rendering" && (
+                {renderStatus[item.id].status === StatusType.PROGRESS && (
                   <div className="space-y-1">
                     <div className="flex justify-between items-center text-sm">
                       <span>Rendering...</span>
-                      <span>{renderStatus[item.id].progress}%</span>
+                      <span>{renderStatus[item.id].message}%</span>
                     </div>
-                    <Progress value={renderStatus[item.id].progress} />
+                    <Progress value={renderStatus[item.id].message} />
                   </div>
                 )}
 
-                {renderStatus[item.id].status === "completed" && <div className="text-green-500 text-sm">Completed</div>}
-
-                {renderStatus[item.id].status === "error" && (
-                  <div className="text-red-500 text-sm">Error: {renderStatus[item.id].error}</div>
+                {renderStatus[item.id].status === StatusType.COMPLETE && (
+                  <div className="text-green-500 text-sm">✅ {renderStatus[item.id].message}</div>
                 )}
 
-                {renderStatus[item.id].status === "aborted" && <div className="text-red-500 text-sm">Aborted</div>}
+                {renderStatus[item.id].status === StatusType.ERROR && (
+                  <div className="text-red-500 text-sm">Error: {renderStatus[item.id].message}</div>
+                )}
+
+                {console.log(restofTheStatus.includes(renderStatus[item.id].status))}
+
+                {restofTheStatus.includes(renderStatus[item.id].status) && (
+                  <div className="text-gray-500 text-sm">{renderStatus[item.id].message}</div>
+                )}
               </div>
             )}
           </li>

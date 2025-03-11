@@ -1,10 +1,10 @@
 import React from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
-import { TheBoldFont } from "./load-font";
+import { KomikaAxis } from "./load-font";
 import { fitText } from "@remotion/layout-utils";
 import { makeTransform, scale, translateY } from "@remotion/animation-utils";
 
-const fontFamily = TheBoldFont;
+const fontFamily = KomikaAxis;
 
 const container = {
   justifyContent: "center",
@@ -15,7 +15,7 @@ const container = {
 };
 
 const DESIRED_FONT_SIZE = 120;
-const HIGHLIGHT_COLOR = "#39E508";
+const HIGHLIGHT_COLOR = "#19E508";
 
 export const Page = ({ enterProgress, page }) => {
   const frame = useCurrentFrame();
