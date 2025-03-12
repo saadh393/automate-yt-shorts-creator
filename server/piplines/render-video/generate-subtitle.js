@@ -25,7 +25,11 @@ export default async function generate_subtitle(convertedAudioPath, jsonObject) 
       tokenLevelTimestamps: true,
     });
 
+    console.log("Whisper Cpation", whisperCppOutput);
+
     const { captions } = toCaptions({ whisperCppOutput });
+
+    console.log("Remotion Caption", captions);
 
     /** @type {Caption} caption */
     return captions;

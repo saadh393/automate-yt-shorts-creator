@@ -96,6 +96,16 @@ app.get("/api/fetch-image", async (req, res) => {
 app.use("/uploads", express.static(UPLOADS_DIR));
 app.use("/output", express.static(OUTPUT_DIR));
 
+app.use((err, req, res, next) => {
+  console.error(err.stack); // Log the error for debugging
+
+  const statusCode = err.status || 500;
+  res.status(statusCode).json({
+    success: false,
+    message: err.message || "Internal Server Error",
+  });
+});
+
 server.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
