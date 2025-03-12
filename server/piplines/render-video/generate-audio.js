@@ -2,6 +2,8 @@ import fs from "fs/promises";
 import path from "path";
 import { OUTPUT_DIR, UPLOADS_DIR } from "../../config/paths.js";
 import fetch from "node-fetch";
+import getAudioDurationInMs from "../../util/get-audio-duration.js";
+import updateProgress, { StatusType } from "../../util/socket-update-progress.js";
 
 const API_ENDPOINT = "http://localhost:8880/dev/captioned_speech";
 const method = "POST";
@@ -18,7 +20,9 @@ const stream = false;
 export default async function generateAudio(jsonObject) {
   const input = jsonObject.data.audioPrompt;
   const outputPath = path.join(UPLOADS_DIR, jsonObject.data.uploadId + ".mp3");
-  console.log({ model, input, voice, speed, response_format, stream });
+
+  updateProgress(jsonObject.data.uploadId, StatusType.VALIDATION, "🎵 Generating the audio");
+
   const response = await fetch(API_ENDPOINT, {
     method,
     headers: {
@@ -45,16 +49,8 @@ export default async function generateAudio(jsonObject) {
   // Write the buffer to a file
   await fs.writeFile(outputPath, Buffer.from(audioBuffer));
 
-  console.log(`Audio saved to ${outputPath}`);
+  // Get Audio Duration
+  const duration = await getAudioDurationInMs(outputPath);
 
-  const timestampPath = response.headers.get("x-timestamps-path");
-  console.log(timestampPath);
-
-  // If you still need a URL for some reason in Node.js, you'd need a different approach
-  // than URL.createObjectURL which is browser-specific
-
-  return outputPath;
+  return { outputPath, duration };
 }
-
-// Example usage
-// generateAudio("Hello world", "./output.mp3");

@@ -52,7 +52,7 @@ export function useSocket() {
         [data.id]: data, // update the specific id
       }));
 
-      console.log(renderStatus);
+      console.log(data);
     });
 
     socket.on("render", (data) => {

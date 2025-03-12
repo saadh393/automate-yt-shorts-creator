@@ -12,28 +12,32 @@ import generate_audio from "./generate-audio.js";
  */
 
 async function renderVideo(jsonObject) {
-  /** Checks if all the files exists in it's own place or not */
+  // Checks if all the files exists in it's own place or not
   await Validation(jsonObject, UPLOADS_DIR);
 
-  console.log("audioPrompt", jsonObject.data?.audioPrompt);
-  if (jsonObject.data?.audioType != "generate") {
-    // Convert audio to 16 bit using ffmpeg
-    const convertedAudioPath = await ffmpegAudioConverter(jsonObject, UPLOADS_DIR);
+  if (jsonObject.data?.audioType == "generate") {
+    // If Audio is not provided then generate from audio Prompt
+    const { duration } = await generate_audio(jsonObject);
 
-    /** @type {Caption} */
-    const captionArray = await generate_subtitle(convertedAudioPath, jsonObject);
-    jsonObject.data.caption = captionArray;
-  } else {
-    await generate_audio(jsonObject);
+    delete jsonObject.data.audioPrompt;
+    jsonObject.data.audio = jsonObject.data.uploadId + ".mp3";
+    jsonObject.data.duration = duration;
   }
+
+  // Convert the audio to 16 bit wav
+  const convertedAudioPath = await ffmpegAudioConverter(jsonObject, UPLOADS_DIR);
+
+  // Generate subtitle
+  const captionArray = await generate_subtitle(convertedAudioPath, jsonObject);
+  jsonObject.data.caption = captionArray;
 
   // Render Video
   const { outputPath } = await process_video(jsonObject);
 
-  // // Folderize all the files
-  // await formating_output(jsonObject, outputPath);
+  // Folderize all the files
+  await formating_output(jsonObject, outputPath);
 
-  // updateProgress(jsonObject.data.uploadId, StatusType.COMPLETE, "Completed");
+  updateProgress(jsonObject.data.uploadId, StatusType.COMPLETE, "Completed");
 }
 
 export default renderVideo;

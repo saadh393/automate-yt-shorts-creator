@@ -10,7 +10,6 @@ export default async function ffmpegAudioConverter(jsonObject, temp_folder) {
   const extension = path.extname(audio);
   const outputPath = path.join(temp_folder, `output_${jsonObject.data.audio.replace(extension, ".wav")}`);
 
-  console.log(audio);
   return new Promise((resolve, reject) => {
     updateProgress(jsonObject.data.uploadId, StatusType.FFMPEG, "⛏️ Preparing FFMPEG...");
 
