@@ -12,6 +12,7 @@ import queueListController from "./controller/queue-list.js";
 import renderQueueListController from "./controller/render-queue-list.js";
 import uploadController from "./controller/upload.controller.js";
 import ClearCache from "./controller/clearCacheController.js";
+import axios from "axios";
 
 const app = express();
 const port = 9000;
@@ -75,52 +76,21 @@ app.get("/api/render-queue-list", renderQueueListController);
 
 app.get("/api/clear-cache", ClearCache);
 
-// let str = `{
-//   "data": {
-//     "images": [
-//       "image-0-1744.png",
-//       "image-1-9402.png"
-//     ],
-//     "audio": "speech_saad.wav",
-//     "duration": 5283.265
-//   }
-// }`;
+app.get("/api/fetch-image", async (req, res) => {
+  try {
+    const imageUrl = req.query.url;
+    if (!imageUrl) {
+      return res.status(400).json({ error: "Image URL is required" });
+    }
 
-// await setupTestEnvironment();
-
-// renderVideo(JSON.parse(str));
-
-// async function setupTestEnvironment() {
-//   const test_resource = path.join(PUBLIC_DIR, "test-resource");
-//   const upload_directory = path.join(UPLOADS_DIR);
-
-//   const test_files = await fs.readdir(test_resource);
-//   for (const file of test_files) {
-//     await fs.copyFile(path.join(test_resource, file), path.join(upload_directory, file));
-//   }
-// }
-
-// const { transcription } = await transcribe({
-//   model: "small",
-//   whisperPath: "/home/saad/Programming/temp-project/remotion-scratch/server/subtitle/whisper.cpp",
-//   whisperCppVersion: "1.5.5",
-//   inputPath: path.join(SERVER_DIR, "public", "output.wav"),
-//   tokenLevelTimestamps: true,
-// });
-
-// for (const token of transcription) {
-//   console.log(token.timestamps.from, token.timestamps.to, token.text);
-// }
-
-// // Optional: Apply our recommended postprocessing
-// const { captions } = convertToCaptions({
-//   transcription,
-//   combineTokensWithinMilliseconds: 200,
-// });
-
-// for (const line of captions) {
-//   console.log(line.text, line.startInSeconds);
-// }
+    const response = await axios.get(imageUrl, { responseType: "arraybuffer" });
+    res.setHeader("Content-Type", response.headers["content-type"]);
+    res.send(Buffer.from(response.data));
+  } catch (error) {
+    console.error("Error fetching image:", error.message);
+    res.status(500).json({ error: "Failed to fetch image" });
+  }
+});
 
 // Serve static files
 app.use("/uploads", express.static(UPLOADS_DIR));

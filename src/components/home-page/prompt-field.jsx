@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import Options from "@/components/home-page/Options";
 import { useApp } from "@/context/app-provider";
+import isValidImageUrl from "@/lib/isValidImageUrl";
 
 const loadSavedOptions = () => {
   const savedOptions = localStorage.getItem("appOptions");
@@ -11,12 +12,20 @@ const loadSavedOptions = () => {
 };
 
 export default function PromptField({ onSubmit }) {
-  const { handleGenerateImage, prompt, setPrompt, config, setConfig } = useApp();
+  const { handleGenerateImage, prompt, setPrompt, config, setConfig, setSelectedImages } = useApp();
 
   const [isOpen, setIsOpen] = useState(false);
 
   const handleSubmit = () => {
     handleGenerateImage();
+  };
+
+  const pasteImage = () => {
+    navigator.clipboard.readText().then(async (text) => {
+      if (await isValidImageUrl(text)) {
+        setSelectedImages((prev) => [...prev, { url: text }]);
+      }
+    });
   };
 
   return (
@@ -28,9 +37,13 @@ export default function PromptField({ onSubmit }) {
 
         <Options isOpen={isOpen} setIsOpen={setIsOpen} setConfig={setConfig} config={config} />
       </div>
-      <Button className="mx-auto my-4 block" onClick={handleSubmit}>
-        Generate Image
-      </Button>
+      <div className="flex justify-center gap-3">
+        <Button onClick={handleSubmit}>Generate Image</Button>
+
+        <Button variant="secondary" onClick={pasteImage}>
+          Paste Image
+        </Button>
+      </div>
     </div>
   );
 }

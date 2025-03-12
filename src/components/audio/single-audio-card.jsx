@@ -6,7 +6,7 @@ export default function SingleAudioCard() {
   const { setAudioFile, setUploadId, setConfig } = useApp();
 
   useEffect(() => {
-    setUploadId(null);
+    setUploadId("");
     setConfig((pre) => {
       return { ...pre, audio: "upload" };
     });

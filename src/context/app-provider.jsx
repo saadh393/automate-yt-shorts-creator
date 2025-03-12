@@ -5,6 +5,7 @@ import { createContext } from "react";
 import { useContext } from "react";
 import { toast } from "sonner";
 import uploadFilesApi from "@/api/upload-queue-files";
+import fetchBlobFromServer from "@/api/featch-blob-from-server";
 
 const AppContext = createContext();
 
@@ -49,12 +50,12 @@ export default function AppProvider({ children }) {
   const [images, setImages] = useState([]);
   const [selectedImages, setSelectedImages] = useState([]);
   const [audioFile, setAudioFile] = useState(null);
-  const [audioText, setAudioText] = useState(null);
+  const [audioText, setAudioText] = useState("");
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [renderedVideo, setRenderedVideo] = useState(null);
   const [generating, setGenerating] = useState(false);
-  const [uploadId, setUploadId] = useState(null);
+  const [uploadId, setUploadId] = useState("");
   const [prompt, setPrompt] = useState("");
 
   useEffect(() => {
@@ -100,15 +101,23 @@ export default function AppProvider({ children }) {
 
     // Convert all images to blobs and wait for them to complete
     const imagePromises = selectedImages.map(async (image, index) => {
-      const response = await fetch(image.url);
-      const blob = await response.blob();
-      return { blob, index };
+      if (image.url.includes("image.pollinations.ai")) {
+        const response = await fetch(image.url);
+        const blob = await response.blob();
+        return { blob, index };
+      } else {
+        const blob = await fetchBlobFromServer(image.url);
+        if (blob) {
+          return { blob, index };
+        }
+        return null;
+      }
     });
 
     // Add images to formData
-    const imageBlobs = await Promise.all(imagePromises);
+    const imageBlobs = (await Promise.all(imagePromises)).filter(Boolean);
     imageBlobs.forEach(({ blob, index }) => {
-      formData.append("images", blob, `image-${index}.png`);
+      formData.append("images", blob, `image-${index}.png`); // @todo : uploadid
     });
 
     formData.append("audioType", config.audio);

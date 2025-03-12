@@ -24,9 +24,7 @@ export default function AudioPage() {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <div className="py-4">
-        <AudioContent />
-      </div>
+      <div className="py-4"></div>
     </>
   );
 }

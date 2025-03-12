@@ -10,35 +10,19 @@ import { useApp } from "@/context/app-provider";
 import { Input } from "../ui/input";
 
 export default function AudioGeneration() {
-  const { setAudioText, audioText, setUploadId, setConfig } = useApp();
-  const [audioPrompt, setAudioPrompt] = useState("");
-  const [fileId, setFileId] = useState("");
+  const { setAudioText, audioText, setUploadId, setConfig, uploadId } = useApp();
   const [audioSrc, setAudioSrc] = useState(null);
 
   useEffect(() => {
-    setUploadId(null);
-    setAudioPrompt(audioText || "");
-    setAudioText();
+    setUploadId("");
     setConfig((pre) => {
       return { ...pre, audio: "generate" };
     });
   }, []);
 
-  function handleDone() {
-    if (!audioPrompt) {
-      return toast.error("Audio Prompt can't be empty");
-    }
-
-    if (!fileId) {
-      return toast.error("File id Can't be empty");
-    }
-    setAudioText(audioPrompt);
-    setUploadId(fileId);
-  }
-
   async function handlePlay() {
     try {
-      const audioRef = await generateAudio(audioPrompt);
+      const audioRef = await generateAudio(audioText);
       setAudioSrc(audioRef);
     } catch (error) {
       setAudioSrc(null);
@@ -51,25 +35,26 @@ export default function AudioGeneration() {
       <div className="max-w-2xl mx-auto space-y-1">
         <Label className="text-neutral-500 text-sm mb-2">{"File ID"}</Label>
 
-        <Input value={fileId} onChange={(e) => setFileId(e.target.value)} placeholder="Type your message here." rows={6} />
+        <Input value={uploadId} onChange={(e) => setUploadId(e.target.value)} placeholder="Type your message here." rows={6} />
       </div>
 
       <div className="max-w-2xl mx-auto space-y-1">
         <Label className="text-neutral-500 text-sm mb-2">{"Write your text to generate Audio"}</Label>
 
-        <Textarea value={audioPrompt} onChange={(e) => setAudioPrompt(e.target.value)} placeholder="Type your message here." rows={6} />
+        <Textarea
+          value={audioText}
+          onChange={(e) => setAudioText(e.target.value)}
+          placeholder="Your Narration to generate Audio"
+          rows={6}
+        />
       </div>
 
       {audioSrc && <AudioPlayer audioSrc={audioSrc} />}
 
       {/* <KokoroTTS /> */}
       <div className="mx-auto text-center my-4 space-x-4">
-        <Button variant="outline" disabled={!audioPrompt.length || audioText} onClick={handleDone}>
-          <Save />
-          Done
-        </Button>
-        <Button variant="outline" disabled={!audioPrompt.length} onClick={handlePlay}>
-          <Play /> Generate
+        <Button variant="outline" disabled={!audioText?.length} onClick={handlePlay}>
+          <Play /> Generate & Play
         </Button>
       </div>
     </div>

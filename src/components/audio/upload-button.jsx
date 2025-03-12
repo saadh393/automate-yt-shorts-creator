@@ -1,78 +1,13 @@
-import { useApp } from "@/context/app-provider";
 import { Button } from "@/components/ui/button";
+import { useApp } from "@/context/app-provider";
+import { Loader } from "lucide-react";
 
 export default function UploadButton() {
-  const {
-    uploading,
-    uploadProgress,
-    setUploading,
-    setUploadProgress,
-
-    audioFile,
-    selectedImages,
-    setRenderedVideo,
-    uploadId,
-    uploadToServer,
-  } = useApp();
-
-  const handleUpload = async (isQueueUpload = false) => {
-    try {
-      setUploading(true);
-      setUploadProgress(0);
-      setRenderedVideo(null);
-
-      const formData = new FormData();
-      formData.append("uploadId", uploadId);
-      console.log(audioFile);
-
-      // Convert all images to blobs and wait for them to complete
-      const imagePromises = selectedImages.map(async (image, index) => {
-        const response = await fetch(image.url);
-        const blob = await response.blob();
-        return { blob, index };
-      });
-
-      const imageBlobs = await Promise.all(imagePromises);
-
-      // Add images to formData
-      imageBlobs.forEach(({ blob, index }) => {
-        formData.append("images", blob, `image-${index}.png`);
-      });
-
-      // Add audio files to formData
-      formData.append("audio", audioFile);
-      formData.append("isMultipleAudio", false);
-      formData.append("isQueueUpload", isQueueUpload);
-
-      // Upload files using proxy
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-        onUploadProgress: (progressEvent) => {
-          const progress = (progressEvent.loaded / progressEvent.total) * 100;
-          setUploadProgress(Math.round(progress));
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Upload failed");
-      }
-
-      const data = await response.json();
-
-      if (!isQueueUpload && data.videoUrl) {
-        setRenderedVideo(data.videoUrl);
-      }
-    } catch (error) {
-      console.error("Error uploading files:", error);
-    } finally {
-      setUploading(false);
-    }
-  };
+  const { uploading, uploadProgress, audioFile, uploadToServer } = useApp();
 
   return (
     <div className="mt-6 flex gap-4 justify-center">
-      <Button onClick={() => handleUpload(false)} disabled={uploading || !audioFile}>
+      <Button onClick={() => uploadToServer({ isQueueUpload: false })} disabled={uploading || !audioFile}>
         {uploading ? (
           <div className="flex items-center space-x-2">
             <span>{uploadProgress < 100 ? `Processing... ${uploadProgress}%` : "Finalizing..."}</span>
@@ -83,6 +18,7 @@ export default function UploadButton() {
         )}
       </Button>
       <Button variant="outline" onClick={() => uploadToServer({ isQueueUpload: true })}>
+        {uploading && <Loader className="animate-spin h-4 w-4 " />}
         Queue New Upload
       </Button>
     </div>

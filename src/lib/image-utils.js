@@ -16,7 +16,7 @@ export const createImageUrl = (prompt, params, width, height) => {
     safe: params.safe.toString(),
     private: params.private.toString(),
   });
-  // return `https://image.pollinations.ai/prompt/${encodedPrompt}?${queryParams.toString()}`;
+  return `https://image.pollinations.ai/prompt/${encodedPrompt}?${queryParams.toString()}`;
 
   const random = Math.round(Math.random() * 100) % (randomImages.length - 1);
   return randomImages[random];

@@ -7,6 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
+import { useApp } from "@/context/app-provider";
 
 const ASPECT_RATIOS = [
   { name: "Square (1:1)", width: 1024, height: 1024 },
@@ -33,6 +34,11 @@ const saveOptions = (options) => {
   localStorage.setItem("appOptions", JSON.stringify(options));
 };
 
+/**
+ *
+ * @param {Config} config - Configuration that preserves user preferene
+ * @returns
+ */
 export default function Options({ isOpen, setIsOpen, setConfig, config }) {
   // Initialize state with values from localStorage using lazy initialization
   const [selectedRatio, setSelectedRatio] = useState(() => {
@@ -105,7 +111,7 @@ export default function Options({ isOpen, setIsOpen, setConfig, config }) {
         <div className="space-y-4">
           <div className="space-y-4">
             <Label htmlFor="aspect-ratio" className="text-xs">
-              Load Image - {imageCount}
+              Load Image - {config.imageCount}
             </Label>
             <Slider defaultValue={[imageCount]} max={100} step={1} onValueCommit={updateOptionsLS} onValueChange={handleSeek} />
           </div>

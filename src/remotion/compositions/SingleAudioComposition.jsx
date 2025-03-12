@@ -38,8 +38,8 @@ export const SingleAudioComposition = ({ data }) => {
             <Img
               src={staticFile(`/uploads/${element}`)}
               style={{
-                width: "100%",
                 height: "100%",
+                objectFit: "cover",
                 ...animation,
               }}
             />

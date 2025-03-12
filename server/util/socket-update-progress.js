@@ -23,7 +23,6 @@ export const StatusType = {
  */
 export default function updateProgress(audio_file_name, status = null, message = null) {
   const id = audio_file_name.replace(/\s+/g, "_");
-  console.log("ID - ", id);
   global.io.emit("render_progress", {
     id,
     status,
