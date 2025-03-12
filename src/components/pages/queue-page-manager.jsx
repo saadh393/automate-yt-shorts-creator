@@ -32,8 +32,6 @@ const restofTheStatus = [
 
 export default function QueuePageManager() {
   const [queueList, setQueueList] = useState([]);
-  const [isStoppingRender, setIsStoppingRender] = useState(false);
-  const [cacheLoading, setCacheLoading] = useState(false);
   const { isConnected, renderStatus, connect, isRendering } = useSocket();
 
   async function refreshPage() {
@@ -70,24 +68,19 @@ export default function QueuePageManager() {
 
   async function handleStopRendering() {
     try {
-      setIsStoppingRender(true);
       await stopRendering();
     } catch (error) {
     } finally {
-      setIsStoppingRender(false);
     }
   }
 
   async function clearCache() {
     try {
-      setCacheLoading(true);
       const data = await clearCacheApi();
-      setCacheLoading(false);
       refreshPage();
     } catch (error) {
       console.error(error);
       toast.error("There is something wrong");
-      setCacheLoading(false);
     }
   }
 
@@ -155,7 +148,7 @@ export default function QueuePageManager() {
 
                   {isRendering && restofTheStatus.includes(renderStatus[item.id].status) && (
                     <AnimatedShinyText className="inline-flex items-center justify-center py-1 transition ease-out">
-                      <span>✨ {renderStatus[item.id].message}</span>
+                      <span> {renderStatus[item.id].message}</span>
                     </AnimatedShinyText>
                   )}
                 </div>

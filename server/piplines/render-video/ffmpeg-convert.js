@@ -22,7 +22,7 @@ export default async function ffmpegAudioConverter(jsonObject, temp_folder) {
         resolve(outputPath);
       })
       .on("progress", function (progress) {
-        updateProgress(jsonObject.data.uploadId, StatusType.FFMPEG, "Audio Converting to 16bit");
+        updateProgress(jsonObject.data.uploadId, StatusType.FFMPEG, "✨ Audio Converting to 16bit");
       })
       .on("error", (err) => {
         updateProgress(jsonObject.data.uploadId, StatusType.ERROR, `Error from FFMPEG : ${err}`);

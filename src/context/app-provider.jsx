@@ -4,24 +4,22 @@ import prepareApiCall from "@/lib/prepare-api-call";
 import { createContext } from "react";
 import { useContext } from "react";
 import { toast } from "sonner";
-import uploadQueueFiles from "@/api/upload-queue-files";
+import uploadFilesApi from "@/api/upload-queue-files";
 
 const AppContext = createContext();
-
-// Load saved state from localStorage
-const loadSavedState = () => {
-  const savedState = localStorage.getItem("appState");
-  return savedState ? JSON.parse(savedState) : null;
-};
-
-// Save state to localStorage
-const saveState = (state) => {
-  localStorage.setItem("appState", JSON.stringify(state));
-};
 
 /** @type {Config} defaultConfig */
 const defaultConfig = {
   audio: "generate",
+  model: "flux",
+  width: 1080,
+  height: 1920,
+  seed: Math.floor(Math.random() * 1000000),
+  nologo: true,
+  enhance: true,
+  safe: true,
+  private: false,
+  imageCount: 4,
 };
 
 /**
@@ -46,29 +44,12 @@ export default function AppProvider({ children }) {
     return saved;
   });
 
-  // Initialize all persisted state using lazy initialization
-  const [state, setState] = useState(() => {
-    const saved = loadSavedState();
-    return saved?.state || STATE.IDLE;
-  });
-
-  const [route, setRoute] = useState(() => {
-    const saved = loadSavedState();
-    return saved?.route || ROUTES.HOME;
-  });
-
-  const [isMultipleAudio, setIsMultipleAudio] = useState(() => {
-    const saved = loadSavedState();
-    return saved?.isMultipleAudio || false;
-  });
-
   // Non-persisted state
   const [error, setError] = useState(null);
   const [images, setImages] = useState([]);
   const [selectedImages, setSelectedImages] = useState([]);
   const [audioFile, setAudioFile] = useState(null);
   const [audioText, setAudioText] = useState(null);
-  const [multipleAudioFiles, setMultipleAudioFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [renderedVideo, setRenderedVideo] = useState(null);
@@ -76,39 +57,17 @@ export default function AppProvider({ children }) {
   const [uploadId, setUploadId] = useState(null);
   const [prompt, setPrompt] = useState("");
 
-  const generateUploadId = () => {
-    let dateTime = new Date().toLocaleString();
-    dateTime = dateTime.replace(/:/g, "-").replace(/\//g, "-").replace(/ /g, "-").replace(/\,/g, "_");
-    const generatedId = prompt.replace(/\s/g, "-") + "_" + dateTime;
-    setUploadId(generatedId);
-    return generatedId;
-  };
-
-  // Save state changes to localStorage
-  useEffect(() => {
-    const stateToSave = {
-      state,
-      route,
-      isMultipleAudio,
-    };
-    saveState(stateToSave);
-  }, [state, route, isMultipleAudio]);
-
   useEffect(() => {
     saveAppConfig(config);
   }, [config]);
 
-  const handleGenerateImage = async ({ prompt, ...params }) => {
-    setState(STATE.GENERATING);
+  const handleGenerateImage = async () => {
     setImages([]);
-    setPrompt(prompt);
-    prepareApiCall(prompt, params, 6)
+    prepareApiCall(prompt, config, 6)
       .then(setImages)
-      .finally(() => setState(STATE.SUCCESS))
       .catch((error) => {
         console.error("Error generating images:", error);
         setError(error);
-        setState(STATE.FAILURE);
       });
   };
 
@@ -122,7 +81,7 @@ export default function AppProvider({ children }) {
     });
   }
 
-  async function queueRendering() {
+  async function uploadToServer({ isQueueUpload = false }) {
     setUploading(true);
     setRenderedVideo(null);
 
@@ -134,7 +93,6 @@ export default function AppProvider({ children }) {
     }
 
     const audioContent = config.audio == "generate" ? audioText : audioFile;
-    console.log(audioContent, config.audio == "generate");
     if (!audioContent) {
       setUploading(false);
       return toast.error("Audio is not provided Properly");
@@ -155,15 +113,15 @@ export default function AppProvider({ children }) {
 
     formData.append("audioType", config.audio);
     formData.append("audio", audioContent);
-    formData.append("isQueueUpload", true);
+    formData.append("isQueueUpload", isQueueUpload);
     formData.append("uploadId", uploadId);
 
-    uploadQueueFiles(formData)
+    uploadFilesApi(formData)
       .then(() => {
         setSelectedImages([]);
         setAudioFile(null);
-        setAudioText(null);
-        setPrompt(null);
+        setAudioText("");
+        setPrompt("");
         setImages(null);
         setError(null);
         setUploadId(null);
@@ -181,23 +139,18 @@ export default function AppProvider({ children }) {
   return (
     <AppContext.Provider
       value={{
-        route,
-        state,
         error,
         images,
         selectedImages,
         audioFile,
-        isMultipleAudio,
-        setIsMultipleAudio,
-        multipleAudioFiles,
-        setMultipleAudioFiles,
+
         uploading,
         uploadProgress,
         renderedVideo,
         generating,
         handleGenerateImage,
         handleSelectImage,
-        setRoute,
+
         setAudioFile,
         setUploading,
         setUploadProgress,
@@ -205,14 +158,15 @@ export default function AppProvider({ children }) {
         setSelectedImages,
         setGenerating,
         uploadId,
-        generateUploadId,
         config,
         setConfig,
         audioText,
         setAudioText,
-        queueRendering,
+        uploadToServer,
         setUploadId,
         uploadId,
+        prompt,
+        setPrompt,
       }}
     >
       {children}

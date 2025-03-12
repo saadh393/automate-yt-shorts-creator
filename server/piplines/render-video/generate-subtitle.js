@@ -15,7 +15,7 @@ const MODEL_VERSION = "1.5.5";
  */
 export default async function generate_subtitle(convertedAudioPath, jsonObject) {
   try {
-    updateProgress(jsonObject.data.uploadId, StatusType.SUBTITLE, "Transcribing the audio file");
+    updateProgress(jsonObject.data.uploadId, StatusType.SUBTITLE, "✍️ Transcribing the audio file");
 
     const whisperCppOutput = await transcribe({
       model: MODEL_NAME,

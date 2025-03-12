@@ -7,13 +7,12 @@ export default function UploadButton() {
     uploadProgress,
     setUploading,
     setUploadProgress,
-    isMultipleAudio,
-    multipleAudioFiles,
+
     audioFile,
     selectedImages,
     setRenderedVideo,
-    generateUploadId,
-    queueRendering,
+    uploadId,
+    uploadToServer,
   } = useApp();
 
   const handleUpload = async (isQueueUpload = false) => {
@@ -23,7 +22,6 @@ export default function UploadButton() {
       setRenderedVideo(null);
 
       const formData = new FormData();
-      const uploadId = generateUploadId();
       formData.append("uploadId", uploadId);
       console.log(audioFile);
 
@@ -42,17 +40,8 @@ export default function UploadButton() {
       });
 
       // Add audio files to formData
-      if (isMultipleAudio) {
-        multipleAudioFiles.forEach((file, index) => {
-          if (file) {
-            formData.append("audio", file);
-          }
-        });
-      } else if (audioFile) {
-        formData.append("audio", audioFile);
-      }
-
-      formData.append("isMultipleAudio", isMultipleAudio);
+      formData.append("audio", audioFile);
+      formData.append("isMultipleAudio", false);
       formData.append("isQueueUpload", isQueueUpload);
 
       // Upload files using proxy
@@ -93,7 +82,7 @@ export default function UploadButton() {
           "Upload Audio and Generate Video"
         )}
       </Button>
-      <Button variant="outline" onClick={queueRendering}>
+      <Button variant="outline" onClick={() => uploadToServer({ isQueueUpload: true })}>
         Queue New Upload
       </Button>
     </div>

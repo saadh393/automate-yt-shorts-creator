@@ -15,7 +15,7 @@ export default async function formating_output(jsonObject, outputPath) {
   const images = jsonObject.data.images;
   const audioExt = path.extname(audio);
   const genericName = audio.split(audioExt)[0];
-  updateProgress(jsonObject.data.uploadId, StatusType.REMOVE_TEMP, "Removing Temporary Files");
+  updateProgress(jsonObject.data.uploadId, StatusType.REMOVE_TEMP, "❌ Removing Temporary Files");
 
   try {
     // Make Directory to Output Folder

@@ -45,14 +45,10 @@ export function useSocket() {
 
     // data - {id, status, message}
     socket.on("render_progress", (data) => {
-      // console.log(renderStatus);
-      // console.log(data);
       setRenderStatus((prev) => ({
         ...prev, // spread existing state
         [data.id]: data, // update the specific id
       }));
-
-      console.log(data);
     });
 
     socket.on("render", (data) => {

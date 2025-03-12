@@ -1,4 +1,4 @@
-export default async function uploadQueueFiles(formData) {
+export default async function uploadFilesApi(formData) {
   const response = await fetch("/api/upload", {
     method: "POST",
     body: formData,

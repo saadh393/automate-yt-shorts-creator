@@ -8,7 +8,7 @@ import updateProgress, { StatusType } from "../../util/socket-update-progress.js
 export default async function Validation(jsonObject, UPLOADS_DIR) {
   const audio = jsonObject.data.audio;
   const images = jsonObject.data.images;
-  updateProgress(jsonObject.data.uploadId, StatusType.VALIDATION, "Validating the resources");
+  updateProgress(jsonObject.data.uploadId, StatusType.VALIDATION, "🔍️ Validating the resources");
 
   // Check if `temp` folder exists or not
   try {

@@ -11,29 +11,12 @@ const loadSavedOptions = () => {
 };
 
 export default function PromptField({ onSubmit }) {
-  const { handleGenerateImage } = useApp();
-  const [prompt, setPrompt] = useState("");
-  const [config, setConfig] = useState(() => {
-    const savedOptions = loadSavedOptions();
-    return {
-      model: "flux",
-      width: 1080,
-      height: 1920,
-      seed: Math.floor(Math.random() * 1000000),
-      nologo: true,
-      enhance: true,
-      safe: true,
-      private: false,
-      imageCount: savedOptions?.imageCount || 4,
-    };
-  });
+  const { handleGenerateImage, prompt, setPrompt, config, setConfig } = useApp();
 
   const [isOpen, setIsOpen] = useState(false);
 
   const handleSubmit = () => {
-    if (prompt.trim()) {
-      handleGenerateImage({ prompt, ...config });
-    }
+    handleGenerateImage();
   };
 
   return (

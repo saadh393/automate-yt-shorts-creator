@@ -2,7 +2,7 @@ import { useApp } from "@/context/app-provider";
 import { ImageGrid } from "@/components/ui/images/image-grid";
 
 export const ImageGenerationStep = () => {
-  const { generating, images, selectedImages, setRoute } = useApp();
+  const { generating, images, selectedImages } = useApp();
 
   if (generating) {
     return (
