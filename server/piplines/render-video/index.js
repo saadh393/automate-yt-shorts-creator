@@ -34,8 +34,8 @@ async function renderVideo(jsonObject) {
   // Render Video
   const { outputPath } = await process_video(jsonObject);
 
-  // Folderize all the files
-  await formating_output(jsonObject, outputPath);
+  // Remove temp and folderize all the files
+  // await formating_output(jsonObject, outputPath);
 
   updateProgress(jsonObject.data.uploadId, StatusType.COMPLETE, "Completed");
 }

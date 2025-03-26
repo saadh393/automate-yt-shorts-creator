@@ -2,6 +2,7 @@ import { toCaptions, transcribe } from "@remotion/install-whisper-cpp";
 import path from "path";
 import { SERVER_DIR } from "../../config/paths.js";
 import updateProgress, { StatusType } from "../../util/socket-update-progress.js";
+import fs from "fs";
 
 const MODEL_NAME = "small";
 const MODEL_PATH = path.join(SERVER_DIR, "subtitle", "whisper.cpp");
@@ -25,11 +26,22 @@ export default async function generate_subtitle(convertedAudioPath, jsonObject) 
       tokenLevelTimestamps: true,
     });
 
-    console.log("Whisper Cpation", whisperCppOutput);
+    fs.writeFileSync(path.join(SERVER_DIR, "whisper-cpp-output.json"), JSON.stringify(whisperCppOutput, null, 2));
 
     const { captions } = toCaptions({ whisperCppOutput });
 
-    console.log("Remotion Caption", captions);
+    fs.writeFileSync(
+      path.join(SERVER_DIR, "whisper-cpp-output.vtt"),
+      captions.map((caption) => caption.text).join("\n")
+    );
+    fs.writeFileSync(
+      path.join(SERVER_DIR, "whisper-cpp-output.srt"),
+      captions.map((caption) => caption.text).join("\n")
+    );
+    fs.writeFileSync(
+      path.join(SERVER_DIR, "whisper-cpp-output.json"),
+      JSON.stringify(captions, null, 2)
+    );
 
     /** @type {Caption} caption */
     return captions;

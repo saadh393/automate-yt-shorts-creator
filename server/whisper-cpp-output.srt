@@ -1,0 +1,53 @@
+Your
+ issue
+ is
+ that
+ the
+ icon
+ is
+ missing
+ from
+ the
+ directory
+,
+ which
+ is
+ why
+ your
+ app
+ isn
+'t
+ showing
+ up
+ in
+ the
+ application
+ launcher
+.
+ This
+ function
+ is
+ executed
+ in
+ a
+ web
+-
+so
+cket
+-
+based
+ environment
+ where
+ a
+ client
+ sends
+ a
+ payload
+.
+ There
+ is
+ issue
+ with
+ client
+ ID
+.

@@ -1,8 +1,9 @@
 import path from "path";
-import { getOutputVideoPath, OUTPUT_DIR, SRC_DIR } from "../../config/paths.js";
+import { getOutputVideoPath, OUTPUT_DIR, SERVER_DIR, SRC_DIR } from "../../config/paths.js";
 import { bundle } from "@remotion/bundler";
 import { renderMedia, selectComposition } from "@remotion/renderer";
 import updateProgress, { StatusType } from "../../util/socket-update-progress.js";
+import fs from "fs";
 
 const REMOTION_INDEX_FILE = path.join(SRC_DIR, "remotion/index.js");
 const COMPOSITION_INDEX = "single-audio";
@@ -20,6 +21,11 @@ export default async function process_video(jsonObject) {
   const OUTPUT_FILE_PATH = getOutputVideoPath(OUTPUT_FILE_NAME);
 
   updateProgress(jsonObject.data.uploadId, StatusType.RENDER, "📦️ Preparing for render...");
+
+  fs.writeFileSync(
+    path.join(SERVER_DIR, "remotion-data.json"),
+    JSON.stringify(jsonObject, null, 2)
+  );
 
   // Configuring Remotion
   const bundled = await bundle(REMOTION_INDEX_FILE);
