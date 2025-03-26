@@ -26,22 +26,7 @@ export default async function generate_subtitle(convertedAudioPath, jsonObject) 
       tokenLevelTimestamps: true,
     });
 
-    fs.writeFileSync(path.join(SERVER_DIR, "whisper-cpp-output.json"), JSON.stringify(whisperCppOutput, null, 2));
-
     const { captions } = toCaptions({ whisperCppOutput });
-
-    fs.writeFileSync(
-      path.join(SERVER_DIR, "whisper-cpp-output.vtt"),
-      captions.map((caption) => caption.text).join("\n")
-    );
-    fs.writeFileSync(
-      path.join(SERVER_DIR, "whisper-cpp-output.srt"),
-      captions.map((caption) => caption.text).join("\n")
-    );
-    fs.writeFileSync(
-      path.join(SERVER_DIR, "whisper-cpp-output.json"),
-      JSON.stringify(captions, null, 2)
-    );
 
     /** @type {Caption} caption */
     return captions;

@@ -22,11 +22,6 @@ export default async function process_video(jsonObject) {
 
   updateProgress(jsonObject.data.uploadId, StatusType.RENDER, "📦️ Preparing for render...");
 
-  fs.writeFileSync(
-    path.join(SERVER_DIR, "remotion-data.json"),
-    JSON.stringify(jsonObject, null, 2)
-  );
-
   // Configuring Remotion
   const bundled = await bundle(REMOTION_INDEX_FILE);
   const composition = await selectComposition({

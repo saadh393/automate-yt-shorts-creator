@@ -3,14 +3,12 @@ import { AbsoluteFill, Audio, Img, Sequence, staticFile, useCurrentFrame, useVid
 import SubtitlePage from "../caption/SubtitlePage";
 import { animations } from "../utils/animations";
 
-// For single we will recive Object
 export const SingleAudioComposition = ({ data }) => {
   if (Array.isArray(data)) {
     return <AbsoluteFill></AbsoluteFill>;
   }
 
   const { images, audio } = data;
-
   const frame = useCurrentFrame();
   const { durationInFrames, fps } = useVideoConfig();
 
@@ -19,7 +17,7 @@ export const SingleAudioComposition = ({ data }) => {
   const animKeys = Object.keys(animations);
 
   const { pages } = createTikTokStyleCaptions({
-    combineTokensWithinMilliseconds: 200,
+    combineTokensWithinMilliseconds: 600,
     captions: data.caption,
   });
 
@@ -43,21 +41,20 @@ export const SingleAudioComposition = ({ data }) => {
                 ...animation,
               }}
             />
-            {pages.map((page, index) => {
-              const nextPage = pages[index + 1] ?? null;
-              const subtitleStartFrame = (page.startMs / 1000) * fps;
-              const subtitleEndFrame = Math.min(nextPage ? (nextPage.startMs / 1000) * fps : Infinity, subtitleStartFrame + 200);
-              const durationInFrames = subtitleEndFrame - subtitleStartFrame;
-              if (durationInFrames <= 0) {
-                return null;
-              }
-
-              return (
-                <Sequence key={index} from={subtitleStartFrame} durationInFrames={durationInFrames}>
-                  <SubtitlePage key={index} page={page} />;
-                </Sequence>
-              );
-            })}
+          </Sequence>
+        );
+      })}
+      {pages.map((page, index) => {
+        const nextPage = pages[index + 1] || null;
+        const subtitleStartFrame = (page.startMs / 1000) * fps;
+        const subtitleEndFrame = nextPage ? (nextPage.startMs / 1000) * fps : durationInFrames;
+        const durationInFramesSubtitle = subtitleEndFrame - subtitleStartFrame;
+        if (durationInFramesSubtitle <= 0) {
+          return null;
+        }
+        return (
+          <Sequence key={index} from={subtitleStartFrame} durationInFrames={durationInFramesSubtitle}>
+            <SubtitlePage page={page} />
           </Sequence>
         );
       })}

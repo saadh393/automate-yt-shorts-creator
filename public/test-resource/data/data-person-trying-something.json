@@ -1,0 +1,13 @@
+{
+  "data": {
+    "images": [
+      "image-0-7877.png",
+      "image-1-1308.png",
+      "image-2-6619.png",
+      "image-3-8315.png"
+    ],
+    "audioType": "generate",
+    "audioPrompt": "Most people fear failure. But failure isn’t the enemy—inaction is. Every failure teaches, every mistake refines, every setback builds strength. The faster you fail, the faster you learn, and the sooner you succeed. So don’t be afraid to mess up. Be afraid of never trying",
+    "uploadId": "person-trying-something"
+  }
+}
