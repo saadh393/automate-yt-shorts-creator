@@ -1,5 +1,6 @@
 import { UPLOADS_DIR } from "../../config/paths.js";
 import updateProgress, { StatusType } from "../../util/socket-update-progress.js";
+import formating_output from "./formating-output.js";
 import generate_audio from "./generate-audio.js";
 import process_video from "./process-video.js";
 import Validation from "./validation.js";
@@ -32,7 +33,7 @@ async function renderVideo(jsonObject) {
   const { outputPath } = await process_video(jsonObject);
 
   // Remove temp and folderize all the files
-  // await formating_output(jsonObject, outputPath);
+  await formating_output(jsonObject, outputPath);
 
   updateProgress(jsonObject.data.uploadId, StatusType.COMPLETE, "Completed");
 }

@@ -20,15 +20,17 @@ export default async function formating_output(jsonObject, outputPath) {
   try {
     // Make Directory to Output Folder
     const outputFolder = path.join(OUTPUT_DIR, genericName);
-    await fs.mkdir(outputFolder);
+    // await fs.mkdir(outputFolder);
 
     // Move the Audio
     const audioFilePath = path.join(UPLOADS_DIR, audio);
-    await fs.rename(audioFilePath, path.join(outputFolder, audio));
+    // await fs.rename(audioFilePath, path.join(outputFolder, audio));
+    // Remove the audio File
+    await fs.rm(audioFilePath);
 
     // Move the Vide Output
     const ext = path.extname(outputPath);
-    await fs.rename(outputPath, path.join(outputFolder, genericName + ext));
+    // await fs.rename(outputPath, path.join(outputFolder, genericName + ext));
 
     // Move the Images
     for await (let image of images) {
@@ -36,23 +38,25 @@ export default async function formating_output(jsonObject, outputPath) {
       const ext = path.extname(image);
       const random = Math.random().toString(36).substring(7);
       const newFileName = `${genericName}-${random}${ext}`;
-      await fs.rename(imageFilePath, path.join(outputFolder, newFileName));
+      // await fs.rename(imageFilePath, path.join(outputFolder, newFileName));
+      // Remove the image File
+      await fs.rm(imageFilePath);
     }
 
     // Delete ffmpeg 16bit audio file
     const deleteFilePath = path.join(UPLOADS_DIR, "output_" + genericName + ".wav");
-    await fs.rm(deleteFilePath);
+    // await fs.rm(deleteFilePath);
 
     // Delete the data/json file
     const dataFilePath = path.join(DATA_DIR, `data-${genericName}.json`);
     // check if the file exists before deleting
-    try {
-      await fs.access(dataFilePath);
-      await fs.rm(dataFilePath);
-    } catch (error) {
-      console.error(`File ${dataFilePath} does not exist.`);
-      return;
-    }
+    // try {
+    //   await fs.access(dataFilePath);
+    //   await fs.rm(dataFilePath);
+    // } catch (error) {
+    //   console.error(`File ${dataFilePath} does not exist.`);
+    //   return;
+    // }
   } catch (error) {
     updateProgress(jsonObject.data.uploadId, StatusType.ERROR, JSON.stringify(error));
     console.error(error);

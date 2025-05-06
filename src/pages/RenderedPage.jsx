@@ -21,20 +21,32 @@ export default function RenderedPage() {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "pending":
-        return "bg-yellow-500";
+      case "PENDING":
+        return "bg-amber-800";
       case "failed":
-        return "bg-red-500";
-      case "done":
-        return "bg-green-500";
+        return "bg-red-200";
+      case "DONE":
+        return "bg-green-900";
       default:
-        return "bg-gray-500";
+        return "bg-zinc-900";
+    }
+  };
+
+  const handleStartProcessing = async () => {
+    try {
+      const response = await fetch("/api/process-content-list", {
+        method: "GET",
+      });
+      const result = await response.json();
+      console.log("Processing started:", result);
+    } catch (error) {
+      console.error("Error starting processing:", error);
     }
   };
 
   return (
     <div>
-      <Button>Start Processing</Button>
+      <Button onClick={handleStartProcessing}>Start Processing</Button>
 
       <div className="mt-4">
         {data.map((item, index) => (

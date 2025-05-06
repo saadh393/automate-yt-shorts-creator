@@ -1,9 +1,7 @@
-import React from "react";
 import { AbsoluteFill, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { Page } from "./Page";
-import { TikTokPage } from "@remotion/captions";
 
-const SubtitlePage = ({ page }) => {
+const SubtitlePage = ({ page, color }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
@@ -18,7 +16,7 @@ const SubtitlePage = ({ page }) => {
 
   return (
     <AbsoluteFill>
-      <Page enterProgress={enter} page={page} />
+      <Page enterProgress={enter} page={page} color={color} />
     </AbsoluteFill>
   );
 };

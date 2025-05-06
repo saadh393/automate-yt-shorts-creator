@@ -1,4 +1,4 @@
 {
   "ignore": ["public/*", "data/*.json", "tmp.json", "server/jsons/*"],
-  "watch": ["server"]
+  "watch": ["src"]
 }

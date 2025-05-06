@@ -13,7 +13,7 @@ const saveImages = async (prompt, id) => {
     let success = false;
     let attempts = 0;
 
-    while (!success && attempts < 5) {
+    while (!success && attempts < 20) {
       attempts++;
       const seed = generateRandomSeed();
       const imageUrl = createImageUrl(prompt, {
@@ -40,13 +40,10 @@ const saveImages = async (prompt, id) => {
         await fs.writeFile(filePath, response.data);
         savedFileNames.push(fileName);
         success = true;
+        attempts = 0;
       } catch (error) {
         console.error(`Attempt ${attempts} failed for image ${i}:`, error.message);
       }
-    }
-
-    if (!success) {
-      throw new Error(`Failed to generate image ${i} after 5 attempts.`);
     }
   }
 
@@ -75,6 +72,11 @@ const processContentListController = async (req, res) => {
 
       // Add your processing logic here
       const savedImages = await saveImages(Title, ID);
+      if(!savedImages || savedImages.length === 0) {
+        console.error(`Failed to save images for ID: ${ID}`);
+        continue; // Skip to the next item if image saving fails
+      }
+      
       const jsonObject = {
         "data": {
           "images": savedImages,

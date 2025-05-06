@@ -3,6 +3,9 @@ import { AbsoluteFill, Audio, Img, Sequence, staticFile, useCurrentFrame, useVid
 import SubtitlePage from "../caption/SubtitlePage";
 import { animations } from "../utils/animations";
 
+const colors = ["#FFAF2D", "#19E508", "#FF2D73", "#2DFFFB"];
+const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
 export const SingleAudioComposition = ({ data }) => {
   const { images, audio } = data;
   const frame = useCurrentFrame();
@@ -52,7 +55,7 @@ export const SingleAudioComposition = ({ data }) => {
         }
         return (
           <Sequence key={index} from={subtitleStartFrame} durationInFrames={durationInFramesSubtitle}>
-            <SubtitlePage page={page} />
+            <SubtitlePage page={page} color={randomColor} />
           </Sequence>
         );
       })}

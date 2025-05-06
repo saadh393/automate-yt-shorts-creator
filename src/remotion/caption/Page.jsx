@@ -13,18 +13,21 @@ const container = {
   height: 150,
 };
 
-const DESIRED_FONT_SIZE = 120;
-const HIGHLIGHT_COLOR = "#19E508";
+const DESIRED_FONT_SIZE = 100;
+// const HIGHLIGHT_COLOR = "#19E508";
 
-export const Page = ({ enterProgress, page }) => {
+export const Page = ({ enterProgress, page, color }) => {
   const frame = useCurrentFrame();
   const { width, fps } = useVideoConfig();
   const timeInMs = (frame / fps) * 1000;
 
+  // Randomly Pick one Color
+  const HIGHLIGHT_COLOR = "#FFD52D";
+
   const fittedText = fitText({
     fontFamily,
     text: page.text,
-    withinWidth: width * 1.8,
+    withinWidth: width * 0.8,
     textTransform: "uppercase",
   });
 
