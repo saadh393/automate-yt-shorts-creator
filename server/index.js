@@ -6,13 +6,16 @@ import multer from "multer";
 import path from "path";
 import { Server } from "socket.io";
 
+import axios from "axios";
 import { uploadConfig } from "./config.js";
 import { OUTPUT_DIR, UPLOADS_DIR } from "./config/paths.js";
+import ClearCache from "./controller/clearCacheController.js";
+import fetchJsonController from "./controller/fetchJsonController.js";
+import processContentListController from "./controller/processContentListController.js";
 import queueListController from "./controller/queue-list.js";
 import renderQueueListController from "./controller/render-queue-list.js";
 import uploadController from "./controller/upload.controller.js";
-import ClearCache from "./controller/clearCacheController.js";
-import axios from "axios";
+import uploadJsonController from "./controller/uploadJsonController.js";
 
 const app = express();
 const port = 9000;
@@ -70,6 +73,8 @@ const upload = multer({
 // Upload endpoint
 app.post("/api/upload", upload.fields(uploadConfig), uploadController);
 
+app.post("/api/upload-json", uploadJsonController);
+
 app.get("/api/queue_list", queueListController);
 
 app.get("/api/render-queue-list", renderQueueListController);
@@ -91,6 +96,12 @@ app.get("/api/fetch-image", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch image" });
   }
 });
+
+// New route for fetching JSON file
+app.get("/api/fetch-json", fetchJsonController);
+
+// New route for processing content list
+app.get("/api/process-content-list", processContentListController);
 
 // Serve static files
 app.use("/uploads", express.static(UPLOADS_DIR));

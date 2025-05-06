@@ -1,0 +1,19 @@
+services:
+  app:
+    build: .
+    ports:
+      - "5173:5173" # React
+      - "9000:9000" # Express
+    volumes:
+      - .:/app # Mount local code
+      - ./public:/app/public # Mount public folder
+      - /app/node_modules # Keep node_modules inside container
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - kokoro
+
+  kokoro:
+    image: ghcr.io/remsky/kokoro-fastapi-cpu:latest
+    ports:
+      - "8880:8880"

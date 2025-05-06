@@ -2,9 +2,8 @@ import { toCaptions, transcribe } from "@remotion/install-whisper-cpp";
 import path from "path";
 import { SERVER_DIR } from "../../config/paths.js";
 import updateProgress, { StatusType } from "../../util/socket-update-progress.js";
-import fs from "fs";
 
-const MODEL_NAME = "small";
+const MODEL_NAME = "small.en";
 const MODEL_PATH = path.join(SERVER_DIR, "subtitle", "whisper.cpp");
 const MODEL_VERSION = "1.5.5";
 

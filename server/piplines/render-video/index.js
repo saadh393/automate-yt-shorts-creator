@@ -1,11 +1,11 @@
 import { UPLOADS_DIR } from "../../config/paths.js";
-import formating_output from "./formating-output.js";
+import updateProgress, { StatusType } from "../../util/socket-update-progress.js";
 import ffmpegAudioConverter from "./ffmpeg-convert.js";
+import formating_output from "./formating-output.js";
+import generate_audio from "./generate-audio.js";
 import generate_subtitle from "./generate-subtitle.js";
 import process_video from "./process-video.js";
 import Validation from "./validation.js";
-import updateProgress, { StatusType } from "../../util/socket-update-progress.js";
-import generate_audio from "./generate-audio.js";
 
 /**
  * @param {DataContent} jsonObject

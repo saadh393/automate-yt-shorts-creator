@@ -1,11 +1,11 @@
 import fs from "fs/promises";
-import path from "path";
-import { OUTPUT_DIR, UPLOADS_DIR } from "../../config/paths.js";
 import fetch from "node-fetch";
+import path from "path";
+import { UPLOADS_DIR } from "../../config/paths.js";
 import getAudioDurationInMs from "../../util/get-audio-duration.js";
 import updateProgress, { StatusType } from "../../util/socket-update-progress.js";
 
-const API_ENDPOINT = "http://localhost:8880/dev/captioned_speech";
+const API_ENDPOINT = "http://localhost:8880/v1/audio/speech";
 const method = "POST";
 const model = "kokoro";
 const voice = "am_adam";
@@ -28,6 +28,7 @@ export default async function generateAudio(jsonObject) {
     headers: {
       "Content-Type": "application/json",
     },
+    responseType: 'arraybuffer',
     body: JSON.stringify({
       model,
       input,

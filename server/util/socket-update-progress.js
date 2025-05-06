@@ -1,4 +1,3 @@
-import path from "path";
 
 /**
  * @enum {Object}
@@ -22,6 +21,7 @@ export const StatusType = {
  * @param {string} message - Any Message
  */
 export default function updateProgress(audio_file_name, status = null, message = null) {
+  console.log(message)
   const id = audio_file_name.replace(/\s+/g, "_");
   global.io.emit("render_progress", {
     id,

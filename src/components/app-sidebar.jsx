@@ -15,12 +15,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import {
-  AudioWaveformIcon,
-  CheckCheckIcon,
-  Home,
-  Hourglass,
-} from "lucide-react";
+import { AudioWaveformIcon, CheckCheckIcon, Home, Hourglass } from "lucide-react";
 import { Link } from "react-router";
 
 // This is sample data.
@@ -40,8 +35,8 @@ const items = [
     icon: Home,
   },
   {
-    title: "Generate Audio",
-    url: "/audio",
+    title: "Excel",
+    url: "/excel",
     icon: AudioWaveformIcon,
   },
   {

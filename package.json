@@ -35,13 +35,13 @@
     "@remotion/animation-utils": "4.0.260",
     "@remotion/bundler": "^4.0.260",
     "@remotion/captions": "4.0.273",
-    "@remotion/cli": "^4.0.260",
+    "@remotion/cli": "4.0.296",
     "@remotion/fonts": "^4.0.273",
-    "@remotion/install-whisper-cpp": "4.0.260",
+    "@remotion/install-whisper-cpp": "4.0.296",
     "@remotion/layout-utils": "4.0.273",
     "@remotion/media-utils": "^4.0.260",
-    "@remotion/player": "^4.0.260",
-    "@remotion/renderer": "^4.0.260",
+    "@remotion/player": "4.0.296",
+    "@remotion/renderer": "4.0.296",
     "@remotion/studio": "^4.0.260",
     "axios": "^1.8.1",
     "class-variance-authority": "^0.7.1",
@@ -64,7 +64,8 @@
     "socket.io-client": "^4.8.1",
     "sonner": "^2.0.1",
     "tailwind-merge": "^2.6.0",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
