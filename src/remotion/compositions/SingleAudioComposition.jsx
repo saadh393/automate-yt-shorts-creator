@@ -4,10 +4,6 @@ import SubtitlePage from "../caption/SubtitlePage";
 import { animations } from "../utils/animations";
 
 export const SingleAudioComposition = ({ data }) => {
-  if (Array.isArray(data)) {
-    return <AbsoluteFill></AbsoluteFill>;
-  }
-
   const { images, audio } = data;
   const frame = useCurrentFrame();
   const { durationInFrames, fps } = useVideoConfig();
@@ -17,9 +13,11 @@ export const SingleAudioComposition = ({ data }) => {
   const animKeys = Object.keys(animations);
 
   const { pages } = createTikTokStyleCaptions({
-    combineTokensWithinMilliseconds: 600,
+    combineTokensWithinMilliseconds: 300,
     captions: data.caption,
   });
+
+  console.log("pages", pages);
 
   return (
     <AbsoluteFill>

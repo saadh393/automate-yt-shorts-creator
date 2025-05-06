@@ -1,9 +1,6 @@
 import { UPLOADS_DIR } from "../../config/paths.js";
 import updateProgress, { StatusType } from "../../util/socket-update-progress.js";
-import ffmpegAudioConverter from "./ffmpeg-convert.js";
-import formating_output from "./formating-output.js";
 import generate_audio from "./generate-audio.js";
-import generate_subtitle from "./generate-subtitle.js";
 import process_video from "./process-video.js";
 import Validation from "./validation.js";
 
@@ -17,25 +14,25 @@ async function renderVideo(jsonObject) {
 
   if (jsonObject.data?.audioType == "generate") {
     // If Audio is not provided then generate from audio Prompt
-    const { duration } = await generate_audio(jsonObject);
+    
+    // Capition is array of objects. Object looks like - { text: 'Octopuses',startMs: -5, endMs: 595,  timestampMs: 295, confidence: 1
+  
+    const {  duration, captions } = await generate_audio(jsonObject);
+    console.log(captions)
 
     delete jsonObject.data.audioPrompt;
     jsonObject.data.audio = jsonObject.data.uploadId + ".mp3";
     jsonObject.data.duration = duration;
-  }
+    jsonObject.data.caption = captions;
+  }  
 
-  // Convert the audio to 16 bit wav
-  const convertedAudioPath = await ffmpegAudioConverter(jsonObject, UPLOADS_DIR);
-
-  // Generate subtitle
-  const captionArray = await generate_subtitle(convertedAudioPath, jsonObject);
-  jsonObject.data.caption = captionArray;
+  
 
   // Render Video
   const { outputPath } = await process_video(jsonObject);
 
   // Remove temp and folderize all the files
-  await formating_output(jsonObject, outputPath);
+  // await formating_output(jsonObject, outputPath);
 
   updateProgress(jsonObject.data.uploadId, StatusType.COMPLETE, "Completed");
 }

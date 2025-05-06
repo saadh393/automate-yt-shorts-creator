@@ -1,9 +1,9 @@
-import path from "path";
-import { getOutputVideoPath, OUTPUT_DIR, SERVER_DIR, SRC_DIR } from "../../config/paths.js";
 import { bundle } from "@remotion/bundler";
 import { renderMedia, selectComposition } from "@remotion/renderer";
-import updateProgress, { StatusType } from "../../util/socket-update-progress.js";
 import fs from "fs";
+import path from "path";
+import { DATA_DIR, getOutputVideoPath, SRC_DIR } from "../../config/paths.js";
+import updateProgress, { StatusType } from "../../util/socket-update-progress.js";
 
 const REMOTION_INDEX_FILE = path.join(SRC_DIR, "remotion/index.js");
 const COMPOSITION_INDEX = "single-audio";
@@ -19,6 +19,11 @@ const VIDEO_CODEC = "h264";
 export default async function process_video(jsonObject) {
   const OUTPUT_FILE_NAME = jsonObject.data.audio.split(".")[0];
   const OUTPUT_FILE_PATH = getOutputVideoPath(OUTPUT_FILE_NAME);
+
+  fs.writeFileSync(
+    path.join(DATA_DIR, jsonObject.data.uploadId + ".json"),
+    JSON.stringify(jsonObject, null, 2)
+  );
 
   updateProgress(jsonObject.data.uploadId, StatusType.RENDER, "📦️ Preparing for render...");
 

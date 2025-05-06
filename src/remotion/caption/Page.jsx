@@ -1,8 +1,7 @@
-import React from "react";
+import { makeTransform, scale, translateY } from "@remotion/animation-utils";
+import { fitText } from "@remotion/layout-utils";
 import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
 import { KomikaAxis } from "./load-font";
-import { fitText } from "@remotion/layout-utils";
-import { makeTransform, scale, translateY } from "@remotion/animation-utils";
 
 const fontFamily = KomikaAxis;
 
@@ -25,7 +24,7 @@ export const Page = ({ enterProgress, page }) => {
   const fittedText = fitText({
     fontFamily,
     text: page.text,
-    withinWidth: width * 0.9,
+    withinWidth: width * 1.8,
     textTransform: "uppercase",
   });
 

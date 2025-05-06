@@ -45,7 +45,14 @@ export default async function formating_output(jsonObject, outputPath) {
 
     // Delete the data/json file
     const dataFilePath = path.join(DATA_DIR, `data-${genericName}.json`);
-    await fs.rm(dataFilePath);
+    // check if the file exists before deleting
+    try {
+      await fs.access(dataFilePath);
+      await fs.rm(dataFilePath);
+    } catch (error) {
+      console.error(`File ${dataFilePath} does not exist.`);
+      return;
+    }
   } catch (error) {
     updateProgress(jsonObject.data.uploadId, StatusType.ERROR, JSON.stringify(error));
     console.error(error);

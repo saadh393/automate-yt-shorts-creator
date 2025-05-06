@@ -59,27 +59,7 @@ const processContentListController = async (req, res) => {
     const filePath = path.join(JSONS_DIR, "content.json");
     const fileContent = await fs.readFile(filePath, "utf-8");
     const contents = JSON.parse(fileContent);
-
-    console.clear();
-
-    const content = {
-      data: {
-        images: [
-          'iNF-AI-SH-1001-1.jpg',
-          'iNF-AI-SH-1001-2.jpg',
-          'iNF-AI-SH-1001-3.jpg',
-          'iNF-AI-SH-1001-4.jpg',
-          'iNF-AI-SH-1001-5.jpg'
-        ],
-        audioType: 'generate',
-        audioPrompt: 'Octopuses have three hearts, and two stop beating when they swim. Their blood is blue due to high copper content, and they can regrow lost arms like lizards regrow tails.',
-        uploadId: 'iNF-AI-SH-1001'
-      }
-    }
-    await renderVideo(content)
-
-    return
-
+   
     // Synchronous loop over the contents array
     for (const item of contents) {
       const { Title, Facts, ID, Upload } = item;
@@ -103,10 +83,15 @@ const processContentListController = async (req, res) => {
           "uploadId": ID
         }
       }
-      console.log("Generated JSON Object:", jsonObject);
 
       // Render Video
       await renderVideo(jsonObject)
+
+      // Update the Upload status to DONE
+      item.Upload = "DONE";
+
+      // Save the updated content back to the file
+      await fs.writeFile(filePath, JSON.stringify(contents, null, 2));
     }
 
     res.status(200).json({ message: "Content list processed successfully." });
