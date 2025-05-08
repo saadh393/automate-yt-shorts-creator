@@ -4,14 +4,21 @@ import path from "path";
 import { createImageUrl, generateRandomSeed } from "../../src/lib/image-utils.js";
 import { JSONS_DIR } from "../config/paths.js";
 import renderVideo from "../piplines/render-video/index.js";
+import updateProgress, { StatusType } from "../util/socket-update-progress.js";
 
-const saveImages = async (prompt, id) => {
+const saveImages = async (item) => {
+  const { ID } = item;
+  const imagePrompts = item['image prompt'].split(",");
+  const iterarion = imagePrompts.length
+
   const savedFileNames = [];
   const uploadsDir = path.join(process.cwd(), "public/uploads");
 
-  for (let i = 1; i <= 5; i++) {
+  for (let i = 1; i < iterarion; i++) {
     let success = false;
     let attempts = 0;
+    const prompt = imagePrompts[i].trim()
+    updateProgress(ID, StatusType.IMAGE, `Generating ${prompt} image`);
 
     while (!success && attempts < 20) {
       attempts++;
@@ -33,7 +40,7 @@ const saveImages = async (prompt, id) => {
           timeout: 60000, // 60 seconds timeout
         });
 
-        const fileName = `${id}-${i}.jpg`;
+        const fileName = `${ID}-${i}.jpg`;
         const filePath = path.join(uploadsDir, fileName);
 
         // Save the image to the uploads directory
@@ -59,19 +66,15 @@ const processContentListController = async (req, res) => {
    
     // Synchronous loop over the contents array
     for (const item of contents) {
-      const { Title, Facts, ID, Upload } = item;
+      const { Title, Script, ID, Upload } = item;
 
       // Skip if Upload is marked as DONE
       if (Upload === "DONE") {
         continue;
       }
 
-      // Process the item (placeholder for actual processing logic)
-      console.log(`Processing ID: ${ID}, Title: ${Title}`);
-      console.log(`Facts: ${Facts}`);
-
       // Add your processing logic here
-      const savedImages = await saveImages(Title, ID);
+      const savedImages = await saveImages(item);
       if(!savedImages || savedImages.length === 0) {
         console.error(`Failed to save images for ID: ${ID}`);
         continue; // Skip to the next item if image saving fails
@@ -81,7 +84,7 @@ const processContentListController = async (req, res) => {
         "data": {
           "images": savedImages,
           "audioType": "generate",
-          "audioPrompt": Facts,
+          "audioPrompt": Script,
           "uploadId": ID
         }
       }

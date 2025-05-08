@@ -15,11 +15,8 @@ async function renderVideo(jsonObject) {
 
   if (jsonObject.data?.audioType == "generate") {
     // If Audio is not provided then generate from audio Prompt
-    
-    // Capition is array of objects. Object looks like - { text: 'Octopuses',startMs: -5, endMs: 595,  timestampMs: 295, confidence: 1
   
     const {  duration, captions } = await generate_audio(jsonObject);
-    console.log(captions)
 
     delete jsonObject.data.audioPrompt;
     jsonObject.data.audio = jsonObject.data.uploadId + ".mp3";

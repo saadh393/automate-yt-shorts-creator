@@ -12,6 +12,7 @@ export const StatusType = {
   PROGRESS: "render_progress",
   REMOVE_TEMP: "temp",
   COMPLETE: "complete",
+  IMAGE : "IMAGE"
 };
 
 /**

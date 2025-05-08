@@ -10,7 +10,8 @@ const uploadJsonController = async (req, res) => {
 
     // Write the JSON data to content.json
     const filePath = `${JSONS_DIR}/content.json`;
-    await fs.writeFile(filePath, JSON.stringify(jsonData, null, 2));
+    let updatedData = jsonData.map(item => ({ ...item, Upload : "PENDING" }))
+    await fs.writeFile(filePath, JSON.stringify(updatedData, null, 2));
 
     res.status(200).json({ message: "JSON file uploaded successfully", filePath });
   } catch (error) {
