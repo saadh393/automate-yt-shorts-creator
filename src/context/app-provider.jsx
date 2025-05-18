@@ -1,11 +1,8 @@
-import { useState, useEffect } from "react";
-import { ROUTES, STATE } from "@/lib/constants";
-import prepareApiCall from "@/lib/prepare-api-call";
-import { createContext } from "react";
-import { useContext } from "react";
-import { toast } from "sonner";
-import uploadFilesApi from "@/api/upload-queue-files";
 import fetchBlobFromServer from "@/api/featch-blob-from-server";
+import uploadFilesApi from "@/api/upload-queue-files";
+import prepareApiCall from "@/lib/prepare-api-call";
+import { createContext, useContext, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const AppContext = createContext();
 
@@ -123,7 +120,7 @@ export default function AppProvider({ children }) {
     formData.append("audioType", config.audio);
     formData.append("audio", audioContent);
     formData.append("isQueueUpload", isQueueUpload);
-    formData.append("uploadId", uploadId);
+    formData.append("uploadId", uploadId == null ? "" : uploadId);
 
     uploadFilesApi(formData)
       .then(() => {

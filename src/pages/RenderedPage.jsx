@@ -62,6 +62,17 @@ export default function RenderedPage() {
     }
   };
 
+  // Stop processing handler
+  const handleStopProcessing = async () => {
+    try {
+      await fetch("/api/stop-rendering", { method: "POST" });
+      // Optionally, you can set localProcessing to false here
+      setLocalProcessing(false);
+    } catch (error) {
+      console.error("Error stopping processing:", error);
+    }
+  };
+
   // Find the currently processing item (first with a running status)
   const runningId = Object.entries(renderStatus).find(
     ([, v]) =>
@@ -92,15 +103,25 @@ export default function RenderedPage() {
             Disconnected
           </span>
         )}
-        <Button
-          onClick={handleStartProcessing}
-          className="text-right mr-0 gap-2 items-center justify-center"
-          variant="secondary"
-          disabled={localProcessing || isRendering || !data.length}
-        >
-          {(localProcessing || isRendering) && <Loader className="animate-spin h-4 w-4 " />}
-          {localProcessing || isRendering ? "Processing..." : "Start Processing"}
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            onClick={handleStartProcessing}
+            className="text-right mr-0 gap-2 items-center justify-center"
+            variant="secondary"
+            disabled={localProcessing || isRendering || !data.length}
+          >
+            {(localProcessing || isRendering) && <Loader className="animate-spin h-4 w-4 " />}
+            {localProcessing || isRendering ? "Processing..." : "Start Processing"}
+          </Button>
+          <Button
+            onClick={handleStopProcessing}
+            className="text-right gap-2 items-center justify-center"
+            variant="destructive"
+            disabled={!localProcessing && !isRendering}
+          >
+            Stop Processing
+          </Button>
+        </div>
       </div>
       <ul className="mt-2 space-y-2 divide-y ">
         {data.map((item, index) => {

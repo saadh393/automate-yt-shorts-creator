@@ -1,13 +1,13 @@
 import generateAudio from "@/api/generate-audio";
+import { useApp } from "@/context/app-provider";
 import { Label } from "@radix-ui/react-label";
-import { Play, Save } from "lucide-react";
+import { Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import Wave from "../wave";
-import { useApp } from "@/context/app-provider";
-import { Input } from "../ui/input";
 
 export default function AudioGeneration() {
   const { setAudioText, audioText, setUploadId, setConfig, uploadId } = useApp();
@@ -35,7 +35,12 @@ export default function AudioGeneration() {
       <div className="max-w-2xl mx-auto space-y-1">
         <Label className="text-neutral-500 text-sm mb-2">{"File ID"}</Label>
 
-        <Input value={uploadId} onChange={(e) => setUploadId(e.target.value)} placeholder="Type your message here." rows={6} />
+        <Input
+          value={uploadId == null ? "" : uploadId}
+          onChange={(e) => setUploadId(e.target.value)}
+          placeholder="Type your message here."
+          rows={6}
+        />
       </div>
 
       <div className="max-w-2xl mx-auto space-y-1">
@@ -49,7 +54,14 @@ export default function AudioGeneration() {
         />
       </div>
 
-      {audioSrc && <AudioPlayer audioSrc={audioSrc} />}
+      {audioSrc && (
+        <>
+          <AudioPlayer audioSrc={audioSrc} />
+          <div className="mx-auto text-center my-4 space-x-4">
+            <DownloadButton audioSrc={audioSrc} fileId={uploadId} />
+          </div>
+        </>
+      )}
 
       {/* <KokoroTTS /> */}
       <div className="mx-auto text-center my-4 space-x-4">
@@ -77,10 +89,14 @@ function AudioPlayer({ audioSrc }) {
       setPlayerState(false);
     }
 
-    audioRef.current.addEventListener("ended", audioEndListeer);
+    if (audioRef.current) {
+      audioRef.current.addEventListener("ended", audioEndListeer);
+    }
 
     return () => {
-      audioRef.current.removeEventListener("ended", audioEndListeer);
+      if (audioRef.current) {
+        audioRef.current.removeEventListener("ended", audioEndListeer);
+      }
     };
   }, [playerState]);
 
@@ -95,17 +111,53 @@ function AudioPlayer({ audioSrc }) {
   }
 
   return (
-    <div className="bg-neutral-900 border-neutral-700 p-3 m-4 rounded-md relative min-h-20">
-      <audio ref={audioRef} src={audioSrc} controls className="opacity-0 absolute" />
-      <Button
-        variant="ghost"
-        onClick={handlePlayPause}
-        className="cursor-pointer  z-40 absolute top-1/2 -translate-y-1/2
-      "
-      >
-        {!playerState ? "Play" : "Pause"}
-      </Button>
-      {playerState && <Wave />}
+    <div className="bg-gradient-to-br from-zinc-900 to-neutral-800 border border-neutral-700 p-6 m-4 rounded-xl relative min-h-28 flex items-center gap-6 shadow-lg">
+      <div className="flex items-center gap-4">
+        <Button
+          variant={playerState ? "destructive" : "success"}
+          onClick={handlePlayPause}
+          className="w-12 h-12 rounded-full flex items-center justify-center text-lg text-white shadow-md transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        >
+          {!playerState ? (
+            <span className="material-icons text-2xl">▶️</span>
+          ) : (
+            <span className="material-icons text-2xl">⏸️</span>
+          )}
+        </Button>
+        <div className="flex flex-col">
+          <span className="text-base font-semibold text-white mb-1">Audio Preview</span>
+          <span className="text-xs text-neutral-400">{playerState ? "Playing..." : "Paused"}</span>
+        </div>
+      </div>
+      <audio ref={audioRef} src={audioSrc} controls className="hidden" />
+      <div className="flex-1 flex items-center">{playerState && <Wave />}</div>
     </div>
+  );
+}
+
+function DownloadButton({ audioSrc, fileId }) {
+  function handleDownload() {
+    const link = document.createElement("a");
+    link.href = audioSrc;
+    const now = new Date();
+    const defaultName =
+      "untitled-" +
+      now.getFullYear() +
+      (now.getMonth() + 1).toString().padStart(2, "0") +
+      now.getDate().toString().padStart(2, "0") +
+      "-" +
+      now.getHours().toString().padStart(2, "0") +
+      now.getMinutes().toString().padStart(2, "0") +
+      now.getSeconds().toString().padStart(2, "0") +
+      ".mp3";
+    link.download = fileId && fileId.trim() !== "" ? fileId + ".mp3" : defaultName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+  return (
+    <Button variant="secondary" onClick={handleDownload} className="ml-2">
+      Download
+    </Button>
   );
 }
