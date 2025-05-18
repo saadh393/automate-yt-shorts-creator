@@ -64,10 +64,15 @@ const processContentListController = async (req, res) => {
 
     // Start processing in the background
     (async () => {
+      global.stopContentProcessing = false; // Reset stop flag at start
       const filePath = path.join(JSONS_DIR, "content.json");
       const fileContent = await fs.readFile(filePath, "utf-8");
       const contents = JSON.parse(fileContent);
       for (const item of contents) {
+        if (global.stopContentProcessing) {
+          updateProgress(item.ID, StatusType.ERROR, "Processing stopped by user.");
+          break;
+        }
         const { Title, Script, ID, Upload } = item;
         if (Upload === "DONE") continue;
         const savedImages = await saveImages(item);
@@ -87,6 +92,7 @@ const processContentListController = async (req, res) => {
         item.Upload = "DONE";
         await fs.writeFile(filePath, JSON.stringify(contents, null, 2));
       }
+      global.stopContentProcessing = false; // Reset after loop
     })();
   } catch (error) {
     console.error("Error processing content list:", error);

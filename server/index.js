@@ -103,6 +103,17 @@ app.get("/api/fetch-json", fetchJsonController);
 // New route for processing content list
 app.get("/api/process-content-list", processContentListController);
 
+// New route for stopping rendering
+app.post("/api/stop-rendering", async (req, res) => {
+  try {
+    // Set a global flag to signal stop (to be checked in processing loop)
+    global.stopContentProcessing = true;
+    res.status(200).json({ message: "Stop signal sent." });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to send stop signal." });
+  }
+});
+
 // Serve static files
 app.use("/uploads", express.static(UPLOADS_DIR));
 app.use("/output", express.static(OUTPUT_DIR));
