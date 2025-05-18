@@ -52,6 +52,7 @@ export function useSocket() {
     });
 
     socket.on("render", (data) => {
+      console.log(data);
       setIsRender(data);
     });
 

@@ -59,50 +59,41 @@ const saveImages = async (item) => {
 
 const processContentListController = async (req, res) => {
   try {
-    // Read the content.json file
-    const filePath = path.join(JSONS_DIR, "content.json");
-    const fileContent = await fs.readFile(filePath, "utf-8");
-    const contents = JSON.parse(fileContent);
-   
-    // Synchronous loop over the contents array
-    for (const item of contents) {
-      const { Title, Script, ID, Upload } = item;
+    // Respond immediately so the frontend is not blocked
+    res.status(202).json({ message: "Content list processing started." });
 
-      // Skip if Upload is marked as DONE
-      if (Upload === "DONE") {
-        continue;
-      }
-
-      // Add your processing logic here
-      const savedImages = await saveImages(item);
-      if(!savedImages || savedImages.length === 0) {
-        console.error(`Failed to save images for ID: ${ID}`);
-        continue; // Skip to the next item if image saving fails
-      }
-      
-      const jsonObject = {
-        "data": {
-          "images": savedImages,
-          "audioType": "generate",
-          "audioPrompt": Script,
-          "uploadId": ID
+    // Start processing in the background
+    (async () => {
+      const filePath = path.join(JSONS_DIR, "content.json");
+      const fileContent = await fs.readFile(filePath, "utf-8");
+      const contents = JSON.parse(fileContent);
+      for (const item of contents) {
+        const { Title, Script, ID, Upload } = item;
+        if (Upload === "DONE") continue;
+        const savedImages = await saveImages(item);
+        if (!savedImages || savedImages.length === 0) {
+          console.error(`Failed to save images for ID: ${ID}`);
+          continue;
         }
+        const jsonObject = {
+          data: {
+            images: savedImages,
+            audioType: "generate",
+            audioPrompt: Script,
+            uploadId: ID,
+          },
+        };
+        await renderVideo(jsonObject);
+        item.Upload = "DONE";
+        await fs.writeFile(filePath, JSON.stringify(contents, null, 2));
       }
-
-      // Render Video
-      await renderVideo(jsonObject)
-
-      // Update the Upload status to DONE
-      item.Upload = "DONE";
-
-      // Save the updated content back to the file
-      await fs.writeFile(filePath, JSON.stringify(contents, null, 2));
-    }
-
-    res.status(200).json({ message: "Content list processed successfully." });
+    })();
   } catch (error) {
     console.error("Error processing content list:", error);
-    res.status(500).json({ error: "Failed to process content list." });
+    // Only send error if it happens before the async block
+    if (!res.headersSent) {
+      res.status(500).json({ error: "Failed to process content list." });
+    }
   }
 };
 
