@@ -1,6 +1,6 @@
 Generate [NUMBER] YouTube video scripts.
 
-Each script should have a maximum duration of around 60 seconds and around 500 Chracters and cover topics from Diet, Nutrition, Funny Facts, History, and Country History.
+Each script should have a maximum duration of around 60 seconds and around 500 Chracters and cover topics [FACTNAME].
 
 These scripts must be both clickbait-style to immediately grab attention and genuinely informative, ensuring the core information presented is accurate.
 
@@ -21,6 +21,6 @@ Provide the output in a markdown table with four columns: `SL`, `ID`, `Title`, `
 For `SL` Column, it's incremental number
 for `ID` Column, it's incremental number with subject like - health-1, health-2, health-3 or fun-1, fun-2, fun-3
 
-For the `image prompt` column: Go through each sentence in the `Script`. For each sentence, identify a key visual element, keyword, or phrase that could serve as an image prompt for that specific part of the script. List these prompts as a comma-separated string in the `image prompt` column for that script.
+For the `image prompt` column: Based on the Script, Pick Topic which is relatable with the Script. Go through each sentence in the `Script`. For each sentence, identify a key visual element, keyword, or phrase which is Related with The Topic. List these concise image prompts as a comma-separated string in the `image prompt` column for that script.
 
 Ensure all generated scripts are unique and do not repeat concepts from previous requests.

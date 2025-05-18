@@ -28,9 +28,12 @@ export default async function generateAudio(text) {
     throw new Error(`HTTP error! Status: ${response.status}`);
   }
 
-  // Create a Blob from the response directly
-  const audioBlob = await response.blob();
+  const responseObj = await response.json();
+
+  // Decode base64 audio and create a Blob URL for playback
+  const audioData = Uint8Array.from(atob(responseObj.audio), c => c.charCodeAt(0));
+  const audioBlob = new Blob([audioData], { type: 'audio/mp3' });
   const audioUrl = URL.createObjectURL(audioBlob);
 
-  return audioUrl;
+  return audioUrl; // Use this URL as the src for your <audio> player
 }
