@@ -12,7 +12,7 @@ export default function PageBreadcumb({ page }) {
     <Breadcrumb>
       <BreadcrumbList>
         <BreadcrumbItem className="hidden md:block">
-          <BreadcrumbLink href="#">Youtube Shorts Generator</BreadcrumbLink>
+          <BreadcrumbLink href="#">Reel Genix</BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator className="hidden md:block" />
         <BreadcrumbItem>
