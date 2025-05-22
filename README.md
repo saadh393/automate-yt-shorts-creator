@@ -1,8 +1,30 @@
+<img src="./public/logo.svg" />
+
 # ReelGenix - YouTube Shorts Generator
 
 This open-source application serves as a robust solution for generating YouTube Shorts, facilitating the creation of engaging video content. It supports the generation of images, audio, and video, and includes functionality for bulk video uploading via Excel spreadsheets.
 
 -----
+### Application Interface
+
+<p align="center">
+  <img src="./public/images/home.png" alt="Home Interface" width="80%" style="max-width:600px;">
+  <br>
+  <em>Home screen: Start generating YouTube Shorts with a simple interface.</em>
+</p>
+
+<p align="center">
+  <img src="./public/images/table.png" alt="Bulk Upload Table" width="80%" style="max-width:600px;">
+  <br>
+  <em>Bulk upload table: Manage and track bulk Video, Image and Audio generation from Excel Sheet</em>
+</p>
+
+<p align="center">
+  <img src="./public/images/process.png" alt="Generation Process" width="80%" style="max-width:600px;">
+  <br>
+  <em>Generation process: Rendering the Video in Single Process</em>
+</p>
+
 
 ## Features
 

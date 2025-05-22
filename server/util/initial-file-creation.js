@@ -1,5 +1,5 @@
 import fs from "fs/promises";
-import { OUTPUT_DIR, UPLOADS_DIR } from "../config/paths.js";
+import { DATA_DIR, OUTPUT_DIR, UPLOADS_DIR } from "../config/paths.js";
 
 export default function initialFileCreation() {
   // Check if Public director contains output folder or not, if not then create
@@ -30,6 +30,21 @@ export default function initialFileCreation() {
         })
         .catch((error) => {
           console.error("Error creating uploads directory:", error);
+        });
+    });
+
+  fs.access(DATA_DIR, fs.constants.F_OK)
+    .then(() => {
+      console.log("DATA_DIR directory exists.");
+    })
+    .catch(() => {
+      console.log("DATA_DIR directory does not exist, creating...");
+      fs.mkdir(DATA_DIR, { recursive: true })
+        .then(() => {
+          console.log("DATA_DIR directory created.");
+        })
+        .catch((error) => {
+          console.error("Error creating DATA_DIR directory:", error);
         });
     });
 }

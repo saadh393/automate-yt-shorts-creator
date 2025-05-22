@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/sidebar";
 import { AudioWaveformIcon, CheckCheckIcon, Home, Hourglass } from "lucide-react";
 import { Link } from "react-router";
+import Logo from "./logo";
 
 // This is sample data.
 const data = {
@@ -63,9 +64,9 @@ const items = [
 
 export function AppSidebar({ ...props }) {
   const [activeTeam, setActiveTeam] = React.useState({
-    name: "Noxsha",
-    logo: Brush,
-    plan: "Academy",
+    name: "Reel Genix",
+    logo: Logo,
+    plan: "Reel Genix Pro",
   });
   return (
     <Sidebar collapsible="icon" {...props}>
