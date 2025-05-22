@@ -1,15 +1,44 @@
-# 🚀 How to run with Docker Compose
+# YouTube Shorts Generator
 
-1. Build and start all services:
-   docker-compose up --build
+This open-source application serves as a robust solution for generating YouTube Shorts, facilitating the creation of engaging video content. It supports the generation of images, audio, and video, and includes functionality for bulk video uploading via Excel spreadsheets.
 
-2. Access the app:
+-----
 
-   - React → http://localhost:5173
-   - Express API → http://localhost:3000
-   - Kokoro API → http://localhost:8880
+## Features
 
-3. Stop everything:
-   docker-compose down
+  * **Single End-to-End Video Generation:** Create complete video content from start to finish.
+  * **Bulk Video Generation:** Efficiently produce multiple videos simultaneously.
 
-🛠 Public folder is mounted, so generated files will be visible on your host machine.
+-----
+
+## Planned Enhancements
+
+  * **Multi-threading Implementation:** Improve performance and generation speed.
+  * **Scheduled YouTube Uploads:** Automate the process of publishing videos to YouTube.
+
+-----
+
+## Getting Started with Docker Compose
+
+To run this application using Docker Compose, follow these steps:
+
+1.  **Build and Start Services:**
+
+    ```bash
+    docker compose up --build
+    ```
+
+2.  **Access the Application:**
+    The React application will be accessible at:
+    [http://localhost:5173](https://www.google.com/search?q=http://localhost:5173)
+
+3.  **Stop Services:**
+    To stop all running services:
+
+    ```bash
+    docker compose down
+    ```
+
+-----
+
+**Note:** The `public` folder is mounted, ensuring that all generated files are readily accessible on your host machine.
