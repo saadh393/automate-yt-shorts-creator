@@ -16,6 +16,7 @@ import queueListController from "./controller/queue-list.js";
 import renderQueueListController from "./controller/render-queue-list.js";
 import uploadController from "./controller/upload.controller.js";
 import uploadJsonController from "./controller/uploadJsonController.js";
+import initialFileCreation from "./util/initial-file-creation.js";
 
 const app = express();
 const port = 9000;
@@ -47,7 +48,6 @@ const storage = multer.diskStorage({
     }
   },
   filename: function (req, file, cb) {
-    console.log(file);
     // For single audio mode, keep original name with short random suffix
     const ext = path.extname(file.originalname);
     const imageExt = [".jpg", ".jpeg", ".png", ".gif", ".webp"];
@@ -129,5 +129,7 @@ app.use((err, req, res, next) => {
 });
 
 server.listen(port, () => {
+  initialFileCreation();
+
   console.log(`Server is running on port ${port}`);
 });
