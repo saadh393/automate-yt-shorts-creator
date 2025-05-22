@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  app:
+    build: .
+    container_name: react-node-app
+    ports:
+      - "5173:5173"   # Vite client
+      - "9000:9000"   # Node server (adjust if different)
+    volumes:
+      - .:/app
+      - ./public:/app/public  # Make public directory accessible
+      - /app/node_modules     # Prevent node_modules from being overwritten
+    environment:
+      - NODE_ENV=development
+    command: npm run dev
+    depends_on:
+      - fastapi
+
+  fastapi:
+    image: ghcr.io/remsky/kokoro-fastapi-cpu:latest
+    container_name: fastapi-service
+    ports:
+      - "8880:8880"

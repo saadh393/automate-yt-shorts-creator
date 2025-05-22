@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { Button } from "./button";
 import { cn } from "@/lib/utils";
 
-export function AudioUpload({ onAudioSelect }) {
+export function AudioUpload({ onAudioSelect, setUploadId }) {
   const [isDragging, setIsDragging] = useState(false);
   const [audioFile, setAudioFile] = useState(null);
   const fileInputRef = useRef(null);
@@ -28,6 +28,9 @@ export function AudioUpload({ onAudioSelect }) {
   const handleFileSelect = (file) => {
     setAudioFile(file);
     onAudioSelect(file);
+
+    const name = file.name.split(".")[0];
+    setUploadId(name);
   };
 
   const handleFileInput = (e) => {
@@ -49,20 +52,12 @@ export function AudioUpload({ onAudioSelect }) {
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
-        <input
-          type="file"
-          accept="audio/*"
-          className="hidden"
-          ref={fileInputRef}
-          onChange={handleFileInput}
-        />
+        <input type="file" accept="audio/*" className="hidden" ref={fileInputRef} onChange={handleFileInput} />
         <div className="space-y-4">
           <h3 className="text-lg font-semibold">Upload Audio</h3>
           {audioFile ? (
             <div className="space-y-2">
-              <p className="text-sm text-muted-foreground">
-                Selected: {audioFile.name}
-              </p>
+              <p className="text-sm text-muted-foreground">Selected: {audioFile.name}</p>
               <audio controls className="w-full">
                 <source src={URL.createObjectURL(audioFile)} type={audioFile.type} />
                 Your browser does not support the audio element.
@@ -79,13 +74,8 @@ export function AudioUpload({ onAudioSelect }) {
             </div>
           ) : (
             <>
-              <p className="text-sm text-muted-foreground">
-                Drag and drop your audio file here, or click to select
-              </p>
-              <Button
-                variant="outline"
-                onClick={() => fileInputRef.current?.click()}
-              >
+              <p className="text-sm text-muted-foreground">Drag and drop your audio file here, or click to select</p>
+              <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
                 Select Audio File
               </Button>
             </>

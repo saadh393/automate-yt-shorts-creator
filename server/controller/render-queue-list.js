@@ -1,74 +1,29 @@
-import { bundle } from "@remotion/bundler";
-import { renderMedia, selectComposition } from "@remotion/renderer";
-import {
-  DATA_DIR,
-  getOutputVideoPath,
-  REMOTION_INDEX,
-} from "../config/paths.js";
-import fs from "fs/promises";
-import path from "path";
+import { EventEmitter } from "events";
+import { DATA_DIR } from "../config/paths.js";
+import renderVideo from "../piplines/render-video/index.js";
+import getDataToRender from "../util/get-data-to-render.js";
 
-export default async function renderQueueListController() {
-  // Sccan data folder to .json files
-  const files = await fs.readdir(DATA_DIR);
+// Increase EventEmitter limit to prevent warnings
+EventEmitter.defaultMaxListeners = 50;
 
-  //   Read all the data.json files and store in array
-  const data = await Promise.all(
-    files.map(async (file) => {
-      const dataPath = path.join(DATA_DIR, file);
-      const data = await fs.readFile(dataPath, "utf-8");
-      return JSON.parse(data);
-    })
-  );
+export default async function renderQueueListController(req, res) {
+  global.io.emit("render", true);
 
-  data.map(async (d, index) => {
-    
-    let file_name = index+1 + '_'
-    if(d.data){
-      if(typeof d.data.audio == "string"){
-        file_name += d.data.audio.split(".")[0]
-      }else{
-        file_name += d.data.audio[0].file_name.split(".")[0]
-      }
+  /** @type {DataContent[]}  */
+  const data = await getDataToRender(DATA_DIR);
+
+  // Process videos sequentially using for...of loop instead of map
+  for (const [index, jsonObject] of data.entries()) {
+    try {
+      global.io.emit("message", `render-index-${index}`);
+      console.log("Rendering for Index", index);
+      await renderVideo(jsonObject);
+    } catch (e) {
+      console.error(e);
     }
-
-    const response = await renderVideo(d, file_name);
-    
-  });
-}
-
-async function renderVideo(inputProps, uploadId) {
-  try {
-    // Bundle the video project
-    const bundled = await bundle(REMOTION_INDEX);
-
-    // Select the composition
-    const composition = await selectComposition({
-      serveUrl: bundled,
-      id: "single-audio",
-      inputProps: inputProps,
-    });
-
-    // Render the video
-    const outputPath = getOutputVideoPath(uploadId);
-    await renderMedia({
-      composition,
-      serveUrl: bundled,
-      codec: "h264",
-      outputLocation: outputPath,
-      inputProps: inputProps,
-      onProgress: ({ progress }) => {
-        // Convert progress from 0-1 to percentage
-        const percentage = Math.floor(progress * 100);
-        console.log(`Rendering progress for video ${uploadId}: ${percentage}%`);
-        // If you have WebSocket set up, you can emit progress
-        // global.io.emit('renderProgress', { uploadId, progress: percentage });
-      },
-    });
-
-    return outputPath;
-  } catch (error) {
-    console.error("Error rendering video:", error);
-    throw error;
   }
+
+  global.io.emit("render", false);
+
+  return { success: true };
 }

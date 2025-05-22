@@ -1,37 +1,45 @@
-import { useState, useEffect } from "react";
-import { ROUTES, STATE } from "@/lib/constants";
+import fetchBlobFromServer from "@/api/featch-blob-from-server";
+import uploadFilesApi from "@/api/upload-queue-files";
 import prepareApiCall from "@/lib/prepare-api-call";
-import { createContext } from "react";
-import { useContext } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const AppContext = createContext();
 
-// Load saved state from localStorage
-const loadSavedState = () => {
-  const savedState = localStorage.getItem("appState");
-  return savedState ? JSON.parse(savedState) : null;
+/** @type {Config} defaultConfig */
+const defaultConfig = {
+  audio: "generate",
+  model: "flux",
+  width: 1080,
+  height: 1920,
+  seed: Math.floor(Math.random() * 1000000),
+  nologo: true,
+  enhance: true,
+  safe: true,
+  private: false,
+  imageCount: 4,
 };
 
-// Save state to localStorage
-const saveState = (state) => {
-  localStorage.setItem("appState", JSON.stringify(state));
+/**
+ *
+ * @returns {Config} savedState
+ */
+const loadAppConfig = () => {
+  const savedState = localStorage.getItem("config");
+  return savedState ? JSON.parse(savedState) : defaultConfig;
+};
+
+const saveAppConfig = (state) => {
+  localStorage.setItem("config", JSON.stringify(state));
 };
 
 export default function AppProvider({ children }) {
-  // Initialize all persisted state using lazy initialization
-  const [state, setState] = useState(() => {
-    const saved = loadSavedState();
-    return saved?.state || STATE.IDLE;
-  });
-
-  const [route, setRoute] = useState(() => {
-    const saved = loadSavedState();
-    return saved?.route || ROUTES.HOME;
-  });
-
-  const [isMultipleAudio, setIsMultipleAudio] = useState(() => {
-    const saved = loadSavedState();
-    return saved?.isMultipleAudio || false;
+  /**
+   * @type {[Config, React.Dispatch<React.SetStateAction<Config>>]}
+   */
+  const [config, setConfig] = useState(() => {
+    const saved = loadAppConfig();
+    return saved;
   });
 
   // Non-persisted state
@@ -39,47 +47,25 @@ export default function AppProvider({ children }) {
   const [images, setImages] = useState([]);
   const [selectedImages, setSelectedImages] = useState([]);
   const [audioFile, setAudioFile] = useState(null);
-  const [multipleAudioFiles, setMultipleAudioFiles] = useState([]);
+  const [audioText, setAudioText] = useState("");
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [renderedVideo, setRenderedVideo] = useState(null);
   const [generating, setGenerating] = useState(false);
-  const [uploadId, setUploadId] = useState(null);
+  const [uploadId, setUploadId] = useState("");
   const [prompt, setPrompt] = useState("");
 
-  const generateUploadId = () => {
-    let dateTime = new Date().toLocaleString();
-    dateTime = dateTime
-      .replace(/:/g, "-")
-      .replace(/\//g, "-")
-      .replace(/ /g, "-")
-      .replace(/\,/g, "_");
-    const generatedId = prompt.replace(/\s/g, "-") + "_" + dateTime;
-    setUploadId(generatedId);
-    return generatedId;
-  };
-
-  // Save state changes to localStorage
   useEffect(() => {
-    const stateToSave = {
-      state,
-      route,
-      isMultipleAudio,
-    };
-    saveState(stateToSave);
-  }, [state, route, isMultipleAudio]);
+    saveAppConfig(config);
+  }, [config]);
 
-  const handleGenerateImage = async ({ prompt, ...params }) => {
-    setState(STATE.GENERATING);
+  const handleGenerateImage = async () => {
     setImages([]);
-    setPrompt(prompt);
-    prepareApiCall(prompt, params, 6)
+    prepareApiCall(prompt, config, 6)
       .then(setImages)
-      .finally(() => setState(STATE.SUCCESS))
       .catch((error) => {
         console.error("Error generating images:", error);
         setError(error);
-        setState(STATE.FAILURE);
       });
   };
 
@@ -91,37 +77,102 @@ export default function AppProvider({ children }) {
         return [...prev, image];
       }
     });
+  }
 
-    console.log(selectedImages);
+  async function uploadToServer({ isQueueUpload = false }) {
+    setUploading(true);
+    setRenderedVideo(null);
+
+    const formData = new FormData();
+
+    if (!selectedImages.length) {
+      setUploading(false);
+      return toast.error("Select Atleast one image file");
+    }
+
+    const audioContent = config.audio == "generate" ? audioText : audioFile;
+    if (!audioContent) {
+      setUploading(false);
+      return toast.error("Audio is not provided Properly");
+    }
+
+    // Convert all images to blobs and wait for them to complete
+    const imagePromises = selectedImages.map(async (image, index) => {
+      if (image.url.includes("image.pollinations.ai")) {
+        const response = await fetch(image.url);
+        const blob = await response.blob();
+        return { blob, index };
+      } else {
+        const blob = await fetchBlobFromServer(image.url);
+        if (blob) {
+          return { blob, index };
+        }
+        return null;
+      }
+    });
+
+    // Add images to formData
+    const imageBlobs = (await Promise.all(imagePromises)).filter(Boolean);
+    imageBlobs.forEach(({ blob, index }) => {
+      formData.append("images", blob, `image-${index}.png`); // @todo : uploadid
+    });
+
+    formData.append("audioType", config.audio);
+    formData.append("audio", audioContent);
+    formData.append("isQueueUpload", isQueueUpload);
+    formData.append("uploadId", uploadId == null ? "" : uploadId);
+
+    uploadFilesApi(formData)
+      .then(() => {
+        setSelectedImages([]);
+        setAudioFile(null);
+        setAudioText("");
+        setPrompt("");
+        setImages(null);
+        setError(null);
+        setUploadId(null);
+        toast.success("Queued Successfully");
+      })
+      .catch((e) => {
+        console.error(e);
+        toast.error("There is an error, check console for stacktrace");
+      })
+      .finally(() => {
+        setUploading(false);
+      });
   }
 
   return (
     <AppContext.Provider
       value={{
-        route,
-        state,
         error,
         images,
         selectedImages,
         audioFile,
-        isMultipleAudio,
-        setIsMultipleAudio,
-        multipleAudioFiles,
-        setMultipleAudioFiles,
+
         uploading,
         uploadProgress,
         renderedVideo,
         generating,
         handleGenerateImage,
         handleSelectImage,
-        setRoute,
+
         setAudioFile,
         setUploading,
         setUploadProgress,
         setRenderedVideo,
+        setSelectedImages,
         setGenerating,
         uploadId,
-        generateUploadId,
+        config,
+        setConfig,
+        audioText,
+        setAudioText,
+        uploadToServer,
+        setUploadId,
+        uploadId,
+        prompt,
+        setPrompt,
       }}
     >
       {children}
@@ -129,21 +180,6 @@ export default function AppProvider({ children }) {
   );
 }
 
-/**
- * @typedef {Object} AppContextValue
- * @property {import('@/lib/constants').STATE} state - Current application state (IDLE, GENERATING, SUCCESS, FAILURE)
- * @property {Error|null} error - Error object if any error occurs during generation
- * @property {Array<Object>} images - Array of generated images
- * @property {boolean} generating - Flag indicating if image generation is in progress
- * @property {Array<Object>} selectedImages - Array of currently selected images
- * @property {(params: {prompt: string, [key: string]: any}) => Promise<void>} handleGenerateImage - Function to generate images based on prompt and additional parameters
- */
-
-/**
- * Hook to access the App context values
- * @returns {AppContextValue} The current app context value
- * @throws {Error} If used outside of AppProvider
- */
 export function useApp() {
   return useContext(AppContext);
 }

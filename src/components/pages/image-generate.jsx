@@ -1,5 +1,5 @@
 import { useState } from "react";
-import PromptField from "../ui/prompt-field";
+import PromptField from "../home-page/prompt-field";
 import { ImageGrid } from "../ui/image-grid";
 import { AudioUpload } from "../ui/audio-upload";
 import { Button } from "../ui/button";
@@ -51,12 +51,7 @@ export default function ImageGenerate() {
             const previewUrl = createImageUrl(prompt, baseParams, 350, 350);
 
             // Create high-res URL with original dimensions
-            const highResUrl = createImageUrl(
-              prompt,
-              baseParams,
-              params.width || 1024,
-              params.height || 1024
-            );
+            const highResUrl = createImageUrl(prompt, baseParams, params.width || 1024, params.height || 1024);
 
             return {
               url: previewUrl, // Use low-res for preview
@@ -188,19 +183,11 @@ export default function ImageGenerate() {
                       <div
                         key={index}
                         className={`relative cursor-pointer rounded-lg overflow-hidden ${
-                          selectedImages.some(
-                            (selected) => selected.url === image.url
-                          )
-                            ? "ring-2 ring-blue-500"
-                            : ""
+                          selectedImages.some((selected) => selected.url === image.url) ? "ring-2 ring-blue-500" : ""
                         }`}
                         onClick={() => handleImageSelect(image)}
                       >
-                        <img
-                          src={image.url}
-                          alt={`Generated ${index + 1}`}
-                          className="w-full h-auto"
-                        />
+                        <img src={image.url} alt={`Generated ${index + 1}`} className="w-full h-auto" />
                       </div>
                     ))}
                   </div>
@@ -219,11 +206,7 @@ export default function ImageGenerate() {
                       className="relative cursor-pointer rounded-lg overflow-hidden ring-2 ring-blue-500"
                       onClick={() => handleImageSelect(image)}
                     >
-                      <img
-                        src={image.url}
-                        alt={`Selected ${index + 1}`}
-                        className="w-full h-auto"
-                      />
+                      <img src={image.url} alt={`Selected ${index + 1}`} className="w-full h-auto" />
                     </div>
                   ))}
                 </div>
@@ -242,10 +225,7 @@ export default function ImageGenerate() {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold">Upload Audio</h2>
-              <Button
-                variant="outline"
-                onClick={() => setCurrentStep(STEPS.IMAGE_GENERATION)}
-              >
+              <Button variant="outline" onClick={() => setCurrentStep(STEPS.IMAGE_GENERATION)}>
                 Back to Images
               </Button>
             </div>
@@ -253,18 +233,10 @@ export default function ImageGenerate() {
 
             {audioFile && selectedImages.length > 0 && (
               <div className="mt-6 space-y-4">
-                <Button
-                  onClick={handleUpload}
-                  disabled={uploading}
-                  className="w-full"
-                >
+                <Button onClick={handleUpload} disabled={uploading} className="w-full">
                   {uploading ? (
                     <div className="flex items-center space-x-2">
-                      <span>
-                        {uploadProgress < 100
-                          ? `Processing... ${uploadProgress}%`
-                          : "Finalizing..."}
-                      </span>
+                      <span>{uploadProgress < 100 ? `Processing... ${uploadProgress}%` : "Finalizing..."}</span>
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                     </div>
                   ) : (
@@ -274,22 +246,12 @@ export default function ImageGenerate() {
 
                 {renderedVideo && (
                   <div className="mt-8">
-                    <h3 className="text-lg font-semibold mb-4">
-                      Generated Video
-                    </h3>
-                    <video
-                      controls
-                      className="w-full rounded-lg shadow-lg"
-                      src={renderedVideo}
-                    >
+                    <h3 className="text-lg font-semibold mb-4">Generated Video</h3>
+                    <video controls className="w-full rounded-lg shadow-lg" src={renderedVideo}>
                       Your browser does not support the video tag.
                     </video>
                     <div className="mt-4">
-                      <a
-                        href={renderedVideo}
-                        download
-                        className="text-blue-500 hover:text-blue-600"
-                      >
+                      <a href={renderedVideo} download className="text-blue-500 hover:text-blue-600">
                         Download Video
                       </a>
                     </div>

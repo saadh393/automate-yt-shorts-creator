@@ -1,10 +1,13 @@
-import renderVideo from "../util/renderVideo.js";
+// import renderVideo from "../util/renderVideo.js";
 import writeDataJson from "../util/writeDataJson.js";
 import fs from "fs/promises";
 
 export default async function uploadController(req, res) {
   try {
     const uploadId = req.body.uploadId;
+    const audioType = req.body.audioType;
+    const audioPrompt = req.body?.audio || null;
+
     if (!uploadId) {
       throw new Error("Upload ID is required");
     }
@@ -16,17 +19,17 @@ export default async function uploadController(req, res) {
       return res.status(400).json({ error: "No images were uploaded." });
     }
 
-    if (!req.files.audio) {
+    if (audioType !== "generate" && !req.files.audio) {
       return res.status(400).json({ error: "No audio files were uploaded." });
     }
 
     // Write data.json with the files information
-    const dataPath = await writeDataJson(req.files, isMultipleAudio, uploadId);
+    const dataPath = await writeDataJson(req.files, isMultipleAudio, uploadId, audioType, audioPrompt);
 
     // Only render video if it's not a queue upload
     let videoUrl = null;
     if (!isQueueUpload) {
-      await renderVideo(dataPath, isMultipleAudio, uploadId);
+      // await renderVideo(dataPath, isMultipleAudio, uploadId);
 
       // Delete the data.json after rendering
       await fs.unlink(dataPath);
@@ -41,16 +44,14 @@ export default async function uploadController(req, res) {
         await fs.unlink(file.path);
       }
 
-      videoUrl = `/output/output-${uploadId}.mp4`;
+      videoUrl = `/output/${uploadId}.mp4`;
     }
 
     // Return response
     res.json({
       success: true,
       videoUrl,
-      message: isQueueUpload
-        ? "Files queued successfully"
-        : "Video rendered successfully",
+      message: isQueueUpload ? "Files queued successfully" : "Video rendered successfully",
     });
   } catch (error) {
     console.error("Error processing upload:", error);

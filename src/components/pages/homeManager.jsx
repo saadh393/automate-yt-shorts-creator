@@ -1,18 +1,12 @@
-import { useApp } from "@/context/app-provider";
-import PartitionManager from "../ui/partition-manager";
-import { ImageGenerationStep } from "../image-generation-step";
-import SelectedImages from "../ui/images/selected-images";
-import { ROUTES } from "@/lib/constants";
-import ImageGenerate from "../image-generate";
-import AudioManager from "../ui/audio/audio-manager";
-import PromptField from "../ui/prompt-field";
+import { ImageGenerationStep } from "@/components/home-page/image-generation-step";
+import PromptField from "@/components/home-page/prompt-field";
+import AudioManager from "@/components/ui/audio/audio-manager";
+import SelectedImages from "@/components/ui/images/selected-images";
 
 export default function HomeManager() {
-  const { selectedImages, route } = useApp();
-
   return (
     <>
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <PromptField />
         <SelectedImages />
       </div>

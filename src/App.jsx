@@ -1,12 +1,13 @@
-import { BrowserRouter, Route, Routes } from "react-router";
-import "./App.css";
 import Layout from "@/components/layout";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import AppProvider from "@/context/app-provider";
-import AudioPage from "@/pages/AudioPage";
+import AudioPage from "@/pages/Excel";
 import Home from "@/pages/HomePage";
 import QueuePage from "@/pages/QueuePage";
 import RenderedPage from "@/pages/RenderedPage";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { BrowserRouter, Route, Routes } from "react-router";
+import { Toaster } from "sonner";
+import "./App.css";
 
 function App() {
   return (
@@ -17,10 +18,11 @@ function App() {
             <Layout>
               <Routes>
                 <Route path="/" index element={<Home />} />
-                <Route path="/audio" element={<AudioPage />} />
+                <Route path="/excel" element={<AudioPage />} />
                 <Route path="/queue" element={<QueuePage />} />
                 <Route path="/rendered" element={<RenderedPage />} />
               </Routes>
+              <Toaster position="bottom-right" />
             </Layout>
           </TooltipProvider>
         </AppProvider>
