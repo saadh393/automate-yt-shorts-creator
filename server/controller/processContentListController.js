@@ -8,8 +8,8 @@ import updateProgress, { StatusType } from "../util/socket-update-progress.js";
 
 const saveImages = async (item) => {
   const { ID } = item;
-  const imagePrompts = item['image prompt'].split(",");
-  const iterarion = imagePrompts.length
+  const imagePrompts = item["Image Prompt"].split(",");
+  const iterarion = imagePrompts.length;
 
   const savedFileNames = [];
   const uploadsDir = path.join(process.cwd(), "public/uploads");
@@ -17,22 +17,27 @@ const saveImages = async (item) => {
   for (let i = 1; i < iterarion; i++) {
     let success = false;
     let attempts = 0;
-    const prompt = imagePrompts[i].trim()
+    const prompt = imagePrompts[i].trim();
     updateProgress(ID, StatusType.IMAGE, `Generating ${prompt} image`);
 
     while (!success && attempts < 20) {
       attempts++;
       const seed = generateRandomSeed();
-      const imageUrl = createImageUrl(prompt, {
-        model: "flux",
-        width: 1080,
-        height: 1920,
-        nologo: true,
-        enhance: true,
-        safe: true,
-        private: false,
-        seed,
-      }, 1080, 1920);
+      const imageUrl = createImageUrl(
+        prompt,
+        {
+          model: "flux",
+          width: 1080,
+          height: 1920,
+          nologo: true,
+          enhance: true,
+          safe: true,
+          private: false,
+          seed,
+        },
+        1080,
+        1920
+      );
 
       try {
         const response = await axios.get(imageUrl, {
