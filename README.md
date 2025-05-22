@@ -1,4 +1,4 @@
-# YouTube Shorts Generator
+# ReelGenix - YouTube Shorts Generator
 
 This open-source application serves as a robust solution for generating YouTube Shorts, facilitating the creation of engaging video content. It supports the generation of images, audio, and video, and includes functionality for bulk video uploading via Excel spreadsheets.
 
