@@ -9,6 +9,7 @@ import { BrowserRouter, Route, Routes } from "react-router";
 import { Toaster } from "sonner";
 import "./App.css";
 import MarkdownTablePage from "./pages/MarkdownTablePage";
+import PromptFillerPage from "./pages/PromptFillerPage";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
                 <Route path="/excel" element={<AudioPage />} />
                 <Route path="/queue" element={<QueuePage />} />
                 <Route path="/markdown" element={<MarkdownTablePage />} />
+                <Route path="/prompt-filler" element={<PromptFillerPage />} />
                 <Route path="/rendered" element={<RenderedPage />} />
               </Routes>
               <Toaster position="bottom-right" />

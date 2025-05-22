@@ -1,4 +1,4 @@
-import { Brush, Table2 } from "lucide-react";
+import { Brush, Sparkle, Sparkles, Table2 } from "lucide-react";
 import * as React from "react";
 
 import { NavUser } from "@/components/nav-user";
@@ -53,6 +53,11 @@ const items = [
     title: "Markdown Table",
     url: "/markdown",
     icon: Table2,
+  },
+  {
+    title: "Prompt Filler",
+    url: "/prompt-filler",
+    icon: Sparkles,
   },
 ];
 

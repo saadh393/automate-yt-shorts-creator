@@ -58,6 +58,7 @@
     "nodemon": "^3.1.9",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-markdown": "^10.1.0",
     "react-resizable-panels": "^2.1.7",
     "react-router": "^7.1.5",
     "remotion": "^4.0.260",
@@ -70,6 +71,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
+    "@tailwindcss/typography": "^0.5.16",
     "@types/node": "^20.11.16",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
